@@ -3,7 +3,6 @@
 text sql like 
 ====================
 
-Convert plain text to many other formats (or stored as python object).
 """
 __author__ = """\n""".join(['Xuan Zhang'])
 
