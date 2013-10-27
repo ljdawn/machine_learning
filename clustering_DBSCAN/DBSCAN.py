@@ -1,7 +1,7 @@
 #coding:utf8
 """
 ====================
-kmeans sample code with scikit 
+DBSCAN sample code with scikit 
 ====================
 
 """
@@ -14,7 +14,10 @@ __all__ = ['']
 import sys, time
 sys.path.append('..')
 import numpy as np
-from sklearn.cluster import MiniBatchKMeans
+from sklearn.cluster import DBSCAN
+from sklearn import metrics
+from sklearn.datasets.samples_generator import make_blobs
+from sklearn.preprocessing import StandardScaler
 from toolbox import text_manufactory
 from toolbox import text_chinese_filter
 
@@ -47,26 +50,12 @@ for i in xrange(len(clean_M)):
 		if tf_idf == False:
 			cma[i][j] = 1
 		else:
-			 cma[i][j] = tfidf[j]
-#kmeans
+			cma[i][j] = tfidf[j]
+#DBSCAN
 start = time.time()
-print start
-k_m = MiniBatchKMeans(n_clusters = n)
-k_m.fit(cma)
-stop = time.time() 
-
-#print out
-res = []
-for i in xrange(len(cma)):
-	res.append((k_m.predict(cma[i])[0],' '.join(f[i].decode('utf-8'))))
-res.sort()
-
-for item in res:
-	print item[0], item[1].strip()
-
-
-
-
-
-
-                                                                                                                                                                               
+db = DBSCAN(eps=0.05, min_samples = n).fit(cma)
+stop = time.time()
+labels = db.labels_
+for i in xrange(len(labels)):
+        print labels[i],''.join(f[i]).decode('utf-8')
+print stop-start

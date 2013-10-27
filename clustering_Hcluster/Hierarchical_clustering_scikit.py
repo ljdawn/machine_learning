@@ -1,7 +1,7 @@
 #coding:utf8
 """
 ====================
-kmeans sample code with scikit 
+Hcluster sample code with scikit 
 ====================
 
 """
@@ -14,7 +14,7 @@ __all__ = ['']
 import sys, time
 sys.path.append('..')
 import numpy as np
-from sklearn.cluster import MiniBatchKMeans
+from sklearn.cluster import Ward
 from toolbox import text_manufactory
 from toolbox import text_chinese_filter
 
@@ -47,26 +47,16 @@ for i in xrange(len(clean_M)):
 		if tf_idf == False:
 			cma[i][j] = 1
 		else:
-			 cma[i][j] = tfidf[j]
-#kmeans
+			cma[i][j] = tfidf[j]
+#Hcluster
 start = time.time()
-print start
-k_m = MiniBatchKMeans(n_clusters = n)
-k_m.fit(cma)
-stop = time.time() 
-
-#print out
+ward = Ward(n_clusters = n).fit(cma)
+label = ward.labels_
+stop = time.time()
 res = []
-for i in xrange(len(cma)):
-	res.append((k_m.predict(cma[i])[0],' '.join(f[i].decode('utf-8'))))
+for i in xrange(len(label)):
+        res.append((label[i],''.join(f[i]).decode('utf-8')))
 res.sort()
-
 for item in res:
-	print item[0], item[1].strip()
-
-
-
-
-
-
-                                                                                                                                                                               
+        print item[0], item[1]
+print stop-start
