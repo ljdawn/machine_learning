@@ -1,6 +1,7 @@
 machine_learning
 ================
 
-machine_learning library
+machine_learning 
+samples
 with
 scikit gensim networkx
