@@ -53,4 +53,29 @@ def text_change_col(list_, from_col = 1, to_col = 0):
 				line_2.append(l)
 				print 'add*'
 		yield(line_2)
-		
+
+def text_pop_col(list_, col_2_pop = -1):
+	list_ =	list(list_)
+	for line in list_:
+		line.pop(col_2_pop)
+		yield line
+
+def text_keep_col(list_, col_2_keep = [0]):
+	list_ =	list(list_)
+	for line in list_:
+		line_2 = []
+		map(line_2.append,[line[i] for i in col_2_keep])
+		yield line_2
+
+def text_comb_col(list1_, list2_):
+	list1_ = list(list1_)
+	list2_ = list(list2_)
+	if len(list1_) != len(list2_):
+		print 'wrong format!'
+		exit(1)
+	else:
+		for i in xrange(len(list1_)):
+			yield list1_[i]+list2_[i]
+
+	
+	
