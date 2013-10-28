@@ -3,4 +3,4 @@ machine_learning
 
 machine_learning:
 with
-scikit gensim networkx
+scikit-learn, gensim, networkx
