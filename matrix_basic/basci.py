@@ -2,6 +2,7 @@ import numpy as np
 import scipy as sp
 from numpy import *
 from numpy.linalg import *
+from sklearn.decomposition import PCA
 
 A = [[1,0,2,1],
 [-1,2,1,3],
