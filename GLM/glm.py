@@ -1,7 +1,7 @@
 from sklearn import linear_model
 import numpy as np
 
-LLM = linear_model.LogisticRegression(tol = 1e-2, penalty = 'l1', C = 10)
+LLM = linear_model.LogisticRegression(tol = 1e-18, penalty = 'l1', C = 18)
 
 fn =  '../testing/data_glm'
 
