@@ -19,6 +19,7 @@ y = np.array(y_pre)
 Res = LLM.fit(X,y)
 
 print Res.predict(X)
+print Res.predict_proba(X)
 print y 
 
 print Res.get_params()
