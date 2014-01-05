@@ -1,0 +1,1 @@
+def my_PRC(y_true, y_pred, class_names = ['class 1', 'class 2']):
