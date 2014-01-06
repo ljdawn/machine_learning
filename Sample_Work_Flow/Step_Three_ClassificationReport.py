@@ -7,7 +7,7 @@ def my_report(y_true, y_pred, class_names = ['class 1', 'class 2']):
 
 
 if __name__ == "__main__":
-	y_true = [0, 1, 0, 1, 0]
-	y_pred = [0, 0, 0, 1, 0]
+	y_true = [0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 1, 0, 1, 0, 0, 1, 0, 1]
+	y_pred = [0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 1, 0, 1, 0, 0, 1, 0, 1]
 	print my_report(y_true,y_pred)[0]
 	print my_report(y_true,y_pred)[1]
