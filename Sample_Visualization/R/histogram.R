@@ -6,10 +6,11 @@ kb_days_f1 <- data.frame(kb_days[kb_days != 0])
 colnames(kb_days_f1)[1] <- "days"
 kb_days_f2 = data.frame(kb_days_f1[kb_days_f1 != 1])
 colnames(kb_days_f2)[1] <- "days"
-p0 <- ggplot(data=kb_days,aes(x=days), colour = factor(cyl))
-p2 <- ggplot(data=kb_days_f2,aes(x=days), colour = factor(cyl))
-p_0 <-p0 + labs(title = "kb_days_histogram") + geom_histogram(binwidth = 1) + xlab("kb days(binwidth = a week)") + ylab("day counts")
+p0 <- ggplot(data=kb_days,aes(x=days), colour = factor(days))
+p2 <- ggplot(data=kb_days_f2,aes(x=days), colour = factor(days))
+p_0 <-p0 + labs(title = "kb_days_histogram") + geom_histogram(binwidth = 7) + xlab("kb days(binwidth = a week)") + ylab("day counts")
 p_2 <-p2 + labs(title = "kb_days_histogram") + geom_histogram(binwidth = 7) + xlab("kb days(binwidth = a week)") + ylab("day counts") + scale_x_continuous(limits=c(0, 365))
-p3 <- ggplot(data=kbed_times,aes(x=times), colour = factor(cyl))
+p3 <- ggplot(data=kbed_times,aes(x=times), colour = factor(days))
 p_3 <-p3 + labs(title = "kbed_times_histogram") + geom_histogram(binwidth = 1) + xlab("kbed times(binwidth = One time)") + ylab("time counts")
 p_3
+length(kb_days[kb_days <= 30])/length(kb_days$days)
