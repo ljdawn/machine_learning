@@ -6,7 +6,7 @@ text sql like
 """
 __author__ = """\n""".join(['Xuan Zhang'])
 
-__version__ ="""2013-10-27"""
+__version__ ="""2014-01-09"""
 
 __all__ = ['']
 
@@ -77,5 +77,14 @@ def text_comb_col(list1_, list2_):
 		for i in xrange(len(list1_)):
 			yield list1_[i]+list2_[i]
 
+def line_filter_by_short_commen_col(fl, fr, col = 0, sep = '\t'):
+	"""return lines in two files with the same value in the perticular colounm
+	"""
+	f1 = [l.strip().split(sep) for l in open(fl).readlines()]
+	f2 = [l.strip().split(sep) for l in open(fr).readlines()]
+	(fS, fL, flag) = (f1, f2, 0) if len(f1) <= len(f2) else (f2, f1, 1)
+	uq = [key[col] for key in (line for line in fS)]
+	rline = filter(lambda x:x[col] in uq, fL)
+	return (fS, rline) if flag == 0 else (rline, Fs)
 	
 	
