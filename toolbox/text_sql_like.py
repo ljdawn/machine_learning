@@ -85,6 +85,6 @@ def line_filter_by_short_commen_col(fl, fr, col = 0, sep = '\t'):
 	(fS, fL, flag) = (f1, f2, 0) if len(f1) <= len(f2) else (f2, f1, 1)
 	uq = [key[col] for key in (line for line in fS)]
 	rline = filter(lambda x:x[col] in uq, fL)
-	return (fS, rline) if flag == 0 else (rline, Fs)
+	return (fS, rline) if flag == 0 else (rline, fS)
 	
 	
