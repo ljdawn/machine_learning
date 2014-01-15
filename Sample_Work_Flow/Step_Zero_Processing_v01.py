@@ -87,6 +87,14 @@ def preprocessing(data_matrix, stand_flag = 0, discret_list = [], binar_list = [
 	res = target_step_1 if stand_flag == 0 else preprocessing.scale(target_step_1)
 	return (res, {'categorize_class':categorize_class,'no change column':(0, target_other.shape[1]), \
 		'binarized column':(target_other.shape[1], target_other.shape[1]+target_binarizer_final_count), 'discret column':(n-len(categorize_class),n-len(categorize_class)+sum(categorize_class)), 'standardization':stand_flag})
+
+def column_picker(data_matrix, column_to_pick = []):
+	import numpy as np
+	target = np.array(data_matrix)
+	assert max(column_to_pick) < target.shape[1]
+	target_step_1 = filter(lambda (x,y):x in column_to_pick, enumerate(target.T))
+	return np.vstack([x[1].T for x in target_step_1]).T
+
 if __name__ == '__main__':
 	#1---
 	#box = [5, 4, 3, 2, 1]
@@ -118,7 +126,8 @@ if __name__ == '__main__':
 	#print preprocessing(table, binar_list = [1, 2], binar_thr_list = [0, 10])
 	#print preprocessing(table, stand_flag = 1)
 	#print preprocessing(table, stand_flag = 0, discret_list = [3, 4], binar_list = [1, 2], binar_thr_list = [0, 10])
-	print preprocessing(table)
-
+	#print preprocessing(table)
+	#5 column_picker
+	print column_picker(table, [1,2,3,4])
 
 
