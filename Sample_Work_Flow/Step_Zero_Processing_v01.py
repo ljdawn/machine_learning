@@ -6,7 +6,7 @@ data processing
 """
 __author__ = """\n""".join(['Xuan Zhang'])
 
-__version__ ="""2013-01-10"""
+__version__ ="""2013-01-15"""
 
 __all__ = ['']
 
@@ -58,6 +58,8 @@ def preprocessing(data_matrix, stand_flag = 0, discret_list = [], binar_list = [
 	target = np.array(data_matrix)
 	(m, n) = target.shape
 	box = []
+	target_binarizer_final_count = 0
+	categorize_class = np.array([])
 	target_filter = np.zeros(n)
 	#class 1 : categorize, 2 : binarize
 	for num in discret_list:
@@ -66,12 +68,15 @@ def preprocessing(data_matrix, stand_flag = 0, discret_list = [], binar_list = [
 		target_filter[num] = 2
 	if len(discret_list) != 0:
 		target_discret = target.T[target_filter == 1].T
+		categorize_class = map(lambda x:len(set(x)),target_discret.T)
+		categorize_sizes = sum(categorize_class)
 		enc.fit(target_discret)
 		target_discret_final = enc.transform(target_discret).toarray()
 		box.append(target_discret_final)
 	if len(binar_list) != 0:
 		target_binarizer = target.T[target_filter == 2]
 		target_binarizer_final = np.vstack(map(lambda l:preprocessing.Binarizer(threshold = binar_thr_list[l]).transform(target_binarizer[l]), range(len(binar_list)))).T 
+		target_binarizer_final_count = target_binarizer_final.shape[1]
 		box.append(target_binarizer_final)
 	target_other = target.T[target_filter == 0].T
 	box.append(target_other)
@@ -79,7 +84,9 @@ def preprocessing(data_matrix, stand_flag = 0, discret_list = [], binar_list = [
 		target_step_1 = np.hstack(box[::-1]) 
 	else:
 		target_step_1 = target_other
-	return target_step_1 if stand_flag == 0 else preprocessing.scale(target_step_1)
+	res = target_step_1 if stand_flag == 0 else preprocessing.scale(target_step_1)
+	return (res, {'categorize_class':categorize_class,'no change column':(0, target_other.shape[1]), \
+		'binarized column':(target_other.shape[1], target_other.shape[1]+target_binarizer_final_count), 'discret column':(n-len(categorize_class),n-len(categorize_class)+sum(categorize_class)), 'standardization':stand_flag})
 if __name__ == '__main__':
 	#1---
 	#box = [5, 4, 3, 2, 1]
@@ -110,6 +117,8 @@ if __name__ == '__main__':
 	#print preprocessing(table, discret_list = [3, 4])
 	#print preprocessing(table, binar_list = [1, 2], binar_thr_list = [0, 10])
 	#print preprocessing(table, stand_flag = 1)
-	print preprocessing(table, stand_flag = 1, discret_list = [3, 4], binar_list = [1, 2], binar_thr_list = [0, 10])
+	#print preprocessing(table, stand_flag = 0, discret_list = [3, 4], binar_list = [1, 2], binar_thr_list = [0, 10])
+	print preprocessing(table)
+
 
 
