@@ -106,6 +106,10 @@ def column_rearrange_num(data_matrix, new_order):
 	new_matrix = np.array([y for (x, y) in new_matrix_list]).T
 	return new_matrix
 
+def column_get_label_num(ori_label, new_label):
+	ori_label_dict = dict([(y, x) for (x, y) in enumerate(ori_label)])
+	return [ori_label_dict[x] for x in new_label]
+
 if __name__ == '__main__':
 	#1---
 	#box = [5, 4, 3, 2, 1]
@@ -142,5 +146,8 @@ if __name__ == '__main__':
 	#print column_picker(table, [1,2,3,4])
 	#6-- column rearrange
 	print column_rearrange_num(table, [1, 4, 3, 0, 2])
-
+	#7-- column rearrange label
+	ori = ['a', 'b', 'c', 'd', 'e']
+	new = ['b', 'e', 'd', 'a', 'c']
+	print column_get_label_num(ori, new)
 

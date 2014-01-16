@@ -87,7 +87,8 @@ def preprocess(data_matrix, stand_flag = 0, discret_list = [], binar_list = [], 
 		target_step_1 = target_other
 	res = target_step_1 if stand_flag == 0 else preprocessing.scale(target_step_1)
 	return (res, {'categorize_class':categorize_class,'no change column':(0, target_other.shape[1]), \
-		'binarized column':(target_other.shape[1], target_other.shape[1]+target_binarizer_final_count), 'discret column':(n-len(categorize_class),n-len(categorize_class)+sum(categorize_class)), 'standardization':stand_flag})
+		'binarized column':(target_other.shape[1], target_other.shape[1]+target_binarizer_final_count), \
+		'discret column':(n-len(categorize_class),n-len(categorize_class)+sum(categorize_class)), 'standardization':stand_flag})
 
 def column_picker(data_matrix, column_to_pick = []):
 	import numpy as np
@@ -95,6 +96,19 @@ def column_picker(data_matrix, column_to_pick = []):
 	assert max(column_to_pick) < target.shape[1]
 	target_step_1 = filter(lambda (x,y):x in column_to_pick, enumerate(target.T))
 	return np.vstack([x[1].T for x in target_step_1]).T
+
+def column_rearrange_num(data_matrix, new_order):
+	import numpy as np
+	new_order_dict = dict([(y, x) for (x, y) in enumerate(new_order)]) 
+	ori_list_dict = dict(enumerate(np.array(data_matrix).T))
+	new_matrix_list = [(new_order_dict[i], ori_list_dict[i]) for i in xrange(len(new_order))]
+	new_matrix_list.sort()
+	new_matrix = np.array([y for (x, y) in new_matrix_list]).T
+	return new_matrix
+
+def column_get_label_num(ori_label, new_label):
+	ori_label_dict = dict([(y, x) for (x, y) in enumerate(ori_label)])
+	return [ori_label_dict[x] for x in new_label]
 
 if __name__ == '__main__':
 	#1---
@@ -114,8 +128,8 @@ if __name__ == '__main__':
 	#print my_Standardization(train, to_prepare)
 	
 	#3--
-	t = 2
-	to_prepare = [0,1,2,3,4,5]
+	#t = 2
+	#to_prepare = [0,1,2,3,4,5]
 	#print my_binarizer(to_prepare, t)
 
 	#4--
@@ -127,8 +141,13 @@ if __name__ == '__main__':
 	#print preprocess(table, binar_list = [1, 2], binar_thr_list = [0, 10])
 	#print preprocess(table, stand_flag = 1)
 	#print preprocess(table, stand_flag = 0, discret_list = [3, 4], binar_list = [1, 2], binar_thr_list = [0, 10])
-	print preprocess(table)
-	#5 column_picker
-	print column_picker(table, [1,2,3,4])
-
+	#print preprocess(table)
+	#5-- column_picker
+	#print column_picker(table, [1,2,3,4])
+	#6-- column rearrange
+	print column_rearrange_num(table, [1, 4, 3, 0, 2])
+	#7-- column rearrange label
+	ori = ['a', 'b', 'c', 'd', 'e']
+	new = ['b', 'e', 'd', 'a', 'c']
+	print column_get_label_num(ori, new)
 
