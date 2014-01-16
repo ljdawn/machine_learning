@@ -11,7 +11,7 @@ __version__ ="""2013-01-16"""
 __all__ = ['']
 
 #coding:utf8
-from tool_box import Step_Zero_Processing_v01 as SZ
+from tool_box import Step_Zero_Processing_v02 as SZ
 from tool_box import Step_Three_ClassificationReport as ST
 from tool_box import Step_Five_RoC as SF
 from tool_box import Step_Six_Cross_Validation as SS
@@ -85,7 +85,7 @@ data_matrix_eff_float = [map(lambda x:float(x) if x != 'NULL' else 0, line) for 
 #<<step 2 -- preprossing data_matrix-- >>
 timer('\n<<step 2 -- preprossing data_matrix-- >>')
 #def column type
-(X, process_summary) = preprocess(data_matrix_eff_float, stand_flag = 1, discret_list = discret_list)
+(X, process_summary) = preprocess(data_matrix_eff_float, stand_flag = 0, discret_list = discret_list)
 nochange_ = process_summary['no change column']
 discret_ = process_summary['discret column']
 binarized_ = process_summary['binarized column']
