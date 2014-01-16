@@ -16,6 +16,7 @@ from tool_box import Step_Three_ClassificationReport as ST
 from tool_box import Step_Five_RoC as SF
 from tool_box import Step_Six_Cross_Validation as SS
 from tool_box import Step_Seven_Grid_Search as S7
+from tool_box import Step_One_Feature_Selection as SO
 from sklearn import linear_model
 import numpy as np
 
@@ -27,6 +28,7 @@ preprocess = SZ.preprocess
 my_report = ST.my_report
 my_PRC = SF.my_PRC
 my_CV = SS.my_CV
+my_FS = SO.my_FS
 #---main functions---
 def get_list(fn):
 	with open(fn) as column_list_f:
@@ -79,14 +81,17 @@ discret_list = [4,5,6,7,8,9]
 
 #<<step 3 -- get flag-- >>
 y = np.array(get_One_col(data_file))
-
-#<<step 4 -- training logstic model-- >>
+#y[1] = 1
+#<<step 4 -- feature_selection -- >>
+X_F = X - X.min() 
+print my_FS(X_F, y)
+#<<step 5 -- training logstic model-- >>
 LLM = linear_model.LogisticRegression(tol = 1e-8, penalty = 'l1', C = 1)
 Model = LLM.fit(X, y)
 y_ = Model.predict(X)
 y_p = [b for [a, b] in Model.predict_proba(X)]
 
-#<<step 5 -- validation-- >>
+#<<step 6 -- validation-- >>
 print '--confusion_matrix:--'
 print my_report(y,y_)[0]
 print '--summary report:--'
@@ -94,6 +99,6 @@ print my_report(y,y_)[1]
 print '--ROC curve area--'
 print my_PRC(map(int, y.tolist()), y_p)[3]
 
-#<<step 6 -- cross validation-- >>
+#<<step 7 -- cross validation-- >>
 
-#<<step 7 -- Grid search-- >>
+#<<step 8 -- Grid search-- >>
