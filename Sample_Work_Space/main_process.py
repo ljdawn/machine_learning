@@ -12,13 +12,21 @@ __all__ = ['']
 
 #coding:utf8
 from tool_box import Step_Zero_Processing_v01 as SZ
+from tool_box import Step_Three_ClassificationReport as ST
+from tool_box import Step_Five_RoC as SF
+from tool_box import Step_Six_Cross_Validation as SS
+from tool_box import Step_Seven_Grid_Search as S7
+from sklearn import linear_model
+import numpy as np
 
 #---tool_box common functions---
 column_picker = SZ.column_picker
 column_rearrange_num = SZ.column_rearrange_num
 column_get_label_num = SZ.column_get_label_num
 preprocess = SZ.preprocess
-
+my_report = ST.my_report
+my_PRC = SF.my_PRC
+my_CV = SS.my_CV
 #---main functions---
 def get_list(fn):
 	with open(fn) as column_list_f:
@@ -46,8 +54,8 @@ column_list_fn_ori = config_path + 'head_ori'
 column_list_fn_new = config_path + 'head_new'
 column_to_use_fn = config_path + 'works'
 data_path = 'data/'
+#data_file = data_path + 'test_10'
 data_file = data_path + 'test'
-#test_file = '../wt_sample_2_201110.txt'
 
 #---process start---
 #<<step 1 -- rearrage data_matrix-- >>
@@ -67,9 +75,25 @@ data_matrix_eff_float = [map(lambda x:float(x) if x != 'NULL' else 0, line) for 
 #<<step 2 -- preprossing data_matrix-- >>
 #def column type
 discret_list = [4,5,6,7,8,9]
-train_data = preprocess(data_matrix_eff_float, stand_flag = 1, discret_list = discret_list)
-print train_data[1]
+(X, process_summary) = preprocess(data_matrix_eff_float, stand_flag = 1, discret_list = discret_list)
 
 #<<step 3 -- get flag-- >>
-res_list = get_One_col(data_file)
-print res_list
+y = np.array(get_One_col(data_file))
+
+#<<step 4 -- training logstic model-- >>
+LLM = linear_model.LogisticRegression(tol = 1e-8, penalty = 'l1', C = 1)
+Model = LLM.fit(X, y)
+y_ = Model.predict(X)
+y_p = [b for [a, b] in Model.predict_proba(X)]
+
+#<<step 5 -- validation-- >>
+print '--confusion_matrix:--'
+print my_report(y,y_)[0]
+print '--summary report:--'
+print my_report(y,y_)[1]
+print '--ROC curve area--'
+print my_PRC(map(int, y.tolist()), y_p)[3]
+
+#<<step 6 -- cross validation-- >>
+
+#<<step 7 -- Grid search-- >>

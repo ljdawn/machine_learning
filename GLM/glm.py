@@ -16,6 +16,9 @@ for line in open(fn):
 X = np.array(X_pre)
 y = np.array(y_pre)
 
+print X
+print y
+
 Res = LLM.fit(X,y)
 
 print Res.predict(X)
