@@ -19,6 +19,7 @@ from tool_box import Step_Seven_Grid_Search as S7
 from tool_box import Step_One_Feature_Selection as SO
 from sklearn import linear_model
 import numpy as np
+import itertools
 
 #---tool_box common functions---
 column_picker = SZ.column_picker
@@ -81,15 +82,18 @@ discret_list = [4,5,6,7,8,9]
 
 #<<step 3 -- get flag-- >>
 y = np.array(get_One_col(data_file))
-#y[1] = 1
+y[1] = 1
 #<<step 4 -- feature_selection -- >>
 X_F = X - X.min() 
-print my_FS(X_F, y)
+X_X_filter = my_FS(X_F, y)[1]
+feature_index = range(len(X_X_filter))
+print list(itertools.compress(feature_index, map(lambda x:x < 0.05, X_X_filter)))
+X_selected = column_picker(X, list(itertools.compress(feature_index, map(lambda x:x < 0.005, X_X_filter))))
 #<<step 5 -- training logstic model-- >>
 LLM = linear_model.LogisticRegression(tol = 1e-8, penalty = 'l1', C = 1)
-Model = LLM.fit(X, y)
-y_ = Model.predict(X)
-y_p = [b for [a, b] in Model.predict_proba(X)]
+Model = LLM.fit(X_selected, y)
+y_ = Model.predict(X_selected)
+y_p = [b for [a, b] in Model.predict_proba(X_selected)]
 
 #<<step 6 -- validation-- >>
 print '--confusion_matrix:--'
