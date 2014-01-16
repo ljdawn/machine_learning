@@ -50,6 +50,10 @@ def get_new_label(colum_label_dict, filter_):
 def get_One_col(fn, col = -1):
 	with open(fn) as column_One:
 		return map(lambda x:x.strip()[col], column_One.readlines())
+def timer(s = ''):
+	from datetime import datetime
+	print s, ':',str(datetime.now())
+	return datetime.now()
 
 #---config/data files---
 config_path = 'config/'
@@ -64,6 +68,7 @@ discret_list = [4,5,6,7,8,9]
 
 #---process start---
 #<<step 1 -- rearrage data_matrix-- >>
+start_time = timer('<<step 1 -- rearrage data_matrix-- >>')
 #get ori_label, new_label
 column_label_ori = get_list(column_list_fn_ori)
 column_label_new = get_list(column_list_fn_new)
@@ -78,6 +83,7 @@ data_matrix_eff = column_picker(data_matrix_new, column_new_list)
 data_matrix_eff_float = [map(lambda x:float(x) if x != 'NULL' else 0, line) for line in data_matrix_eff.tolist()]
 
 #<<step 2 -- preprossing data_matrix-- >>
+timer('\n<<step 2 -- preprossing data_matrix-- >>')
 #def column type
 (X, process_summary) = preprocess(data_matrix_eff_float, stand_flag = 1, discret_list = discret_list)
 nochange_ = process_summary['no change column']
@@ -85,9 +91,11 @@ discret_ = process_summary['discret column']
 binarized_ = process_summary['binarized column']
 cate_class = process_summary['categorize_class']
 #<<step 3 -- get flag-- >>
+timer('\n<<step 3 -- get flag-- >>')
 y = np.array(get_One_col(data_file))
 y[1] = 1
 #<<step 4 -- feature_selection -- >>
+timer('\n<<step 4 -- feature_selection -- >>')
 X_F = X - X.min() 
 X_X_filter = my_FS(X_F, y)[1]
 feature_index = range(len(X_X_filter))
@@ -104,16 +112,18 @@ for ite in Label_C:
 	for it in list(ite):
 		Label_ALL.append(it + '_'+str(n))
 		n += 1
-print 'selected feature base on X2(p<0.005):','\n','-'*100
+print '\nselected feature base on X2(p<0.005):','\n','-'*100
 Label_selected_ALL = [Label_ALL[x] for x in feature_selected_index]
-print Label_selected_ALL
+print Label_selected_ALL, len(Label_selected_ALL)
 #<<step 5 -- training logstic model-- >>
+timer('\n<<step 5 -- training logstic model-- >>')
 LLM = linear_model.LogisticRegression(tol = 1e-8, penalty = 'l1', C = 1)
 Model = LLM.fit(X_selected, y)
 y_ = Model.predict(X_selected)
 y_p = [b for [a, b] in Model.predict_proba(X_selected)]
 
 #<<step 6 -- validation-- >>
+timer('\n<<step 6 -- validation-- >>')
 print '\nconfusion_matrix:','\n','-'*100
 print my_report(y,y_)[0]
 print '\nsummary report:','\n','-'*100
@@ -124,3 +134,5 @@ print my_PRC(map(int, y.tolist()), y_p)[3]
 #<<step 7 -- cross validation-- >>
 
 #<<step 8 -- Grid search-- >>
+end_time = timer('\nend')
+print str(end_time - start_time)
