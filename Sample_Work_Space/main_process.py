@@ -61,10 +61,11 @@ column_list_fn_ori = config_path + 'head_ori'
 column_list_fn_new = config_path + 'head_new'
 column_to_use_fn = config_path + 'works'
 data_path = 'data/'
-#data_file = data_path + 'test_10'
 data_file = data_path + 'test'
+#data_file = data_path + 'test_all'
 
 discret_list = [4,5,6,7,8,9]
+binar_list = []
 
 #---process start---
 #<<step 1 -- rearrage data_matrix-- >>
@@ -85,7 +86,7 @@ data_matrix_eff_float = [map(lambda x:float(x) if x != 'NULL' else 0, line) for 
 #<<step 2 -- preprossing data_matrix-- >>
 timer('\n<<step 2 -- preprossing data_matrix-- >>')
 #def column type
-(X, process_summary) = preprocess(data_matrix_eff_float, stand_flag = 0, discret_list = discret_list)
+(X, process_summary) = preprocess(data_matrix_eff_float, stand_flag = 2, discret_list = discret_list, binar_list = binar_list)
 nochange_ = process_summary['no change column']
 discret_ = process_summary['discret column']
 binarized_ = process_summary['binarized column']
@@ -129,6 +130,9 @@ print my_report(y,y_)[0]
 print '\nsummary report:','\n','-'*100
 print my_report(y,y_)[1]
 print '\nROC curve area:','\n','-'*100
+print my_PRC(map(int, y.tolist()), y_p)[0][900]
+print my_PRC(map(int, y.tolist()), y_p)[1][900]
+print my_PRC(map(int, y.tolist()), y_p)[2][900]
 print my_PRC(map(int, y.tolist()), y_p)[3]
 
 #<<step 7 -- cross validation-- >>
