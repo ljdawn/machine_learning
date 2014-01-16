@@ -60,6 +60,8 @@ data_path = 'data/'
 #data_file = data_path + 'test_10'
 data_file = data_path + 'test'
 
+discret_list = [4,5,6,7,8,9]
+
 #---process start---
 #<<step 1 -- rearrage data_matrix-- >>
 #get ori_label, new_label
@@ -77,9 +79,11 @@ data_matrix_eff_float = [map(lambda x:float(x) if x != 'NULL' else 0, line) for 
 
 #<<step 2 -- preprossing data_matrix-- >>
 #def column type
-discret_list = [4,5,6,7,8,9]
 (X, process_summary) = preprocess(data_matrix_eff_float, stand_flag = 1, discret_list = discret_list)
-
+nochange_ = process_summary['no change column']
+discret_ = process_summary['discret column']
+binarized_ = process_summary['binarized column']
+cate_class = process_summary['categorize_class']
 #<<step 3 -- get flag-- >>
 y = np.array(get_One_col(data_file))
 y[1] = 1
@@ -87,8 +91,22 @@ y[1] = 1
 X_F = X - X.min() 
 X_X_filter = my_FS(X_F, y)[1]
 feature_index = range(len(X_X_filter))
-print list(itertools.compress(feature_index, map(lambda x:x < 0.05, X_X_filter)))
-X_selected = column_picker(X, list(itertools.compress(feature_index, map(lambda x:x < 0.005, X_X_filter))))
+feature_selected_index = list(itertools.compress(feature_index, map(lambda x:x < 0.05, X_X_filter)))
+X_selected = column_picker(X, feature_selected_index)
+label_before = [column_label_new[x] for x in column_new_list]
+Label_A = [label_before[x] for x in range(nochange_[0], nochange_[1])]
+Label_B = [label_before[x] for x in range(binarized_[0], binarized_[1])]
+Label_C_t = [label_before[x] for x in range(discret_[0], len(label_before))]
+Label_C = [itertools.repeat(Label_C_t[i], int(cate_class[i])) for i in range(len(cate_class))]
+Label_ALL = Label_A+Label_B
+for ite in Label_C:
+	n = 0
+	for it in list(ite):
+		Label_ALL.append(it + '_'+str(n))
+		n += 1
+print 'selected feature base on X2(p<0.005):','\n','-'*100
+Label_selected_ALL = [Label_ALL[x] for x in feature_selected_index]
+print Label_selected_ALL
 #<<step 5 -- training logstic model-- >>
 LLM = linear_model.LogisticRegression(tol = 1e-8, penalty = 'l1', C = 1)
 Model = LLM.fit(X_selected, y)
@@ -96,11 +114,11 @@ y_ = Model.predict(X_selected)
 y_p = [b for [a, b] in Model.predict_proba(X_selected)]
 
 #<<step 6 -- validation-- >>
-print '--confusion_matrix:--'
+print '\nconfusion_matrix:','\n','-'*100
 print my_report(y,y_)[0]
-print '--summary report:--'
+print '\nsummary report:','\n','-'*100
 print my_report(y,y_)[1]
-print '--ROC curve area--'
+print '\nROC curve area:','\n','-'*100
 print my_PRC(map(int, y.tolist()), y_p)[3]
 
 #<<step 7 -- cross validation-- >>
