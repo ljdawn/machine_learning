@@ -6,7 +6,7 @@ data processing
 """
 __author__ = """\n""".join(['Xuan Zhang'])
 
-__version__ ="""2013-01-15"""
+__version__ ="""2013-01-16"""
 
 __all__ = ['']
 
