@@ -20,6 +20,7 @@ from tool_box import Step_One_Feature_Selection as SO
 from sklearn import linear_model
 import numpy as np
 import itertools
+from datetime import datetime
 
 #---tool_box common functions---
 column_picker = SZ.column_picker
@@ -47,14 +48,11 @@ def get_One_col(fn, col = -1):
 	with open(fn) as column_One:
 		return map(lambda x:x.strip()[col], column_One.readlines())
 def timer(s = ''):
-	from datetime import datetime
 	print s, ':',str(datetime.now())
-	return datetime.now()
 
-def main(column_list_fn_ori, column_list_fn_new, column_to_use_fn, data_file, stand_flag = 0, tol = 1e-8, penalty = 'l1', C = 1):
+def main(column_list_fn_ori, column_list_fn_new, column_to_use_fn, data_file, discret_list, binar_list, binar_thr_list, stand_flag = 0, p=0.005):
 	#---process start---
 	#<<step 1 -- rearrage data_matrix-- >>
-	start_time = timer('<<step 1 -- rearrage data_matrix-- >>')
 	#get ori_label, new_label
 	column_label_ori = get_list(column_list_fn_ori)
 	column_label_new = get_list(column_list_fn_new)
@@ -69,7 +67,6 @@ def main(column_list_fn_ori, column_list_fn_new, column_to_use_fn, data_file, st
 	data_matrix_eff_float = [map(lambda x:float(x) if x != 'NULL' else 0, line) for line in data_matrix_eff.tolist()]	
 
 	#<<step 2 -- preprossing data_matrix-- >>
-	timer('\n<<step 2 -- preprossing data_matrix-- >>')
 	#def column type
 	(X, process_summary) = preprocess(data_matrix_eff_float, stand_flag = stand_flag, discret_list = discret_list, binar_list = binar_list)
 	nochange_ = process_summary['no change column']
@@ -77,15 +74,13 @@ def main(column_list_fn_ori, column_list_fn_new, column_to_use_fn, data_file, st
 	binarized_ = process_summary['binarized column']
 	cate_class = process_summary['categorize_class']
 	#<<step 3 -- get flag-- >>
-	timer('\n<<step 3 -- get flag-- >>')
 	y = np.array(get_One_col(data_file))
 	y[1] = 1
 	#<<step 4 -- feature_selection -- >>
-	timer('\n<<step 4 -- feature_selection -- >>')
 	X_F = X - X.min() 
 	X_X_filter = my_FS(X_F, y)[1]
 	feature_index = range(len(X_X_filter))
-	feature_selected_index = list(itertools.compress(feature_index, map(lambda x:x < 0.05, X_X_filter)))
+	feature_selected_index = list(itertools.compress(feature_index, map(lambda x:x < p, X_X_filter)))
 	X_selected = column_picker(X, feature_selected_index)
 	label_before = [column_label_new[x] for x in column_new_list]
 	Label_A = [label_before[x] for x in range(nochange_[0], nochange_[1])]
@@ -98,33 +93,11 @@ def main(column_list_fn_ori, column_list_fn_new, column_to_use_fn, data_file, st
 		for it in list(ite):
 			Label_ALL.append(it + '_'+str(n))
 			n += 1
-	print '\nselected feature base on X2(p<0.005):','\n','-'*100
+	print '\nselected feature base on X2(p<'+str(p)+'):','\n','-'*100
 	Label_selected_ALL = [Label_ALL[x] for x in feature_selected_index]
 	print Label_selected_ALL, len(Label_selected_ALL)
-	#<<step 5 -- training logstic model-- >>
-	timer('\n<<step 5 -- training logstic model-- >>')
-	LLM = linear_model.LogisticRegression(tol = tol, penalty = penalty, C = C)
-	Model = LLM.fit(X_selected, y)
-	y_ = Model.predict(X_selected)
-	y_p = [b for [a, b] in Model.predict_proba(X_selected)]	
+	return (X_selected, y)
 
-	#<<step 6 -- validation-- >>
-	timer('\n<<step 6 -- validation-- >>')
-	print '\nconfusion_matrix:','\n','-'*100
-	print my_report(y,y_)[0]
-	print '\nsummary report:','\n','-'*100
-	print my_report(y,y_)[1]
-	print '\nROC curve area:','\n','-'*100
-	print my_PRC(map(int, y.tolist()), y_p)[0][900]
-	print my_PRC(map(int, y.tolist()), y_p)[1][900]
-	print my_PRC(map(int, y.tolist()), y_p)[2][900]
-	print my_PRC(map(int, y.tolist()), y_p)[3]	
-
-	#<<step 7 -- cross validation-- >>	
-
-	#<<step 8 -- Grid search-- >>
-	end_time = timer('\nend')
-	print str(end_time - start_time)
 if __name__ == '__main__':
 	#---config/data files---
 	config_path = 'config/'
@@ -140,9 +113,27 @@ if __name__ == '__main__':
 	binar_thr_list = []
 	tol =  1e-8
 	penalty = 'l1'
-	C = 1	
+	C = 1
+	p = 0.005	
 
-	main(column_list_fn_ori = column_list_fn_ori, column_list_fn_new = column_list_fn_new, \
-		column_to_use_fn = column_to_use_fn, data_file = data_file, \
-		stand_flag = stand_flag, tol = tol, penalty = penalty, C = C)
-		
+	start_time = datetime.now()
+	(X_selected, y) = main(column_list_fn_ori = column_list_fn_ori, column_list_fn_new = column_list_fn_new, column_to_use_fn = column_to_use_fn, data_file = data_file, \
+		stand_flag = stand_flag, discret_list = discret_list, binar_list = binar_list, binar_thr_list = binar_thr_list, p=p)
+
+	timer('<< -- training logstic model-- >>')
+	LLM = linear_model.LogisticRegression(tol = tol, penalty = penalty, C = C)
+	Model = LLM.fit(X_selected, y)
+	y_ = Model.predict(X_selected)
+	y_p = [b for [a, b] in Model.predict_proba(X_selected)]	
+	timer('<< -- validation-- >>')
+	print '\nconfusion_matrix:','\n','-'*100
+	print my_report(y,y_)[0]
+	print '\nsummary report:','\n','-'*100
+	print my_report(y,y_)[1]
+	print '\nROC curve area:','\n','-'*100
+	print my_PRC(map(int, y.tolist()), y_p)[0][100]
+	print my_PRC(map(int, y.tolist()), y_p)[1][100]
+	print my_PRC(map(int, y.tolist()), y_p)[2][100]
+	print my_PRC(map(int, y.tolist()), y_p)[3]
+	end_time =  datetime.now()
+	print 'time_cost:', str(end_time - start_time)

@@ -129,8 +129,7 @@ def column_rearrange_num(data_matrix, new_order):
 	ori_list_dict = dict(enumerate(np.array(data_matrix).T))
 	new_matrix_list = [(new_order_dict[i], ori_list_dict[i]) for i in xrange(len(new_order))]
 	new_matrix_list.sort()
-	new_matrix = np.array([y for (x, y) in new_matrix_list]).T
-	return new_matrix
+	return np.array([y for (x, y) in new_matrix_list]).T
 
 def column_get_label_num(ori_label, new_label):
 	ori_label_dict = dict([(y, x) for (x, y) in enumerate(ori_label)])
