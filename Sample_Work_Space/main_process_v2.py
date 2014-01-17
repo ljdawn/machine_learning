@@ -48,9 +48,9 @@ def get_One_col(fn, col = -1):
 	with open(fn) as column_One:
 		return map(lambda x:x.strip()[col], column_One.readlines())
 def timer(s = ''):
-	print s, ':',str(datetime.now())
+	print str(datetime.now()), '>>', s
 
-def main(column_list_fn_ori, column_list_fn_new, column_to_use_fn, data_file, discret_list, binar_list, binar_thr_list, stand_flag = 0, p=0.005):
+def main(column_list_fn_ori, column_list_fn_new, column_to_use_fn, data_file, discret_list, binar_list, binar_thr_list, stand_flag = 0, p=0.05):
 	#---process start---
 	#<<step 1 -- rearrage data_matrix-- >>
 	#get ori_label, new_label
@@ -75,7 +75,6 @@ def main(column_list_fn_ori, column_list_fn_new, column_to_use_fn, data_file, di
 	cate_class = process_summary['categorize_class']
 	#<<step 3 -- get flag-- >>
 	y = np.array(get_One_col(data_file))
-	y[1] = 1
 	#<<step 4 -- feature_selection -- >>
 	X_F = X - X.min() 
 	X_X_filter = my_FS(X_F, y)[1]
@@ -93,29 +92,51 @@ def main(column_list_fn_ori, column_list_fn_new, column_to_use_fn, data_file, di
 		for it in list(ite):
 			Label_ALL.append(it + '_'+str(n))
 			n += 1
-	print '\nselected feature base on X2(p<'+str(p)+'):','\n','-'*100
+	timer('selected feature base on X2(p<'+str(p)+'):'+'\n'+'-'*100)
 	Label_selected_ALL = [Label_ALL[x] for x in feature_selected_index]
-	print Label_selected_ALL, len(Label_selected_ALL)
+	timer(Label_selected_ALL) 
+	timer(len(Label_selected_ALL))
 	return (X_selected, y)
 
 if __name__ == '__main__':
+	model_flag = 4
+	stand_flag = 0
 	#---config/data files---
-	config_path = 'config/'
-	column_list_fn_ori = config_path + 'head_ori'
-	column_list_fn_new = config_path + 'head_new'
-	column_to_use_fn = config_path + 'works'
-	data_path = 'data/'
-	data_file = data_path + 'test'
-	#data_file = data_path + 'test_all'
-	stand_flag = 2
-	discret_list = [4,5,6,7,8,9]
-	binar_list = []
-	binar_thr_list = []
+	column_list_fn_ori = 'config/head_ori'
+	column_list_fn_new = 'config/head_new'
+	#---model setup---
 	tol =  1e-8
 	penalty = 'l1'
 	C = 1
-	p = 0.005	
-
+	p = 0.05	
+	#---customize------------------------------------->>>>>>
+	if model_flag == 1:
+		column_to_use_fn = 'config/f_1_af'
+		data_file = 'data/test'
+		discret_list = [98,99,100,101,102,103]
+		binar_list = []
+		binar_thr_list = []
+	elif model_flag == 2:
+		column_to_use_fn = 'config/f_2_af'
+		data_file = 'data/test'
+		discret_list = [4,5,6,7,8,9]
+		binar_list = []
+		binar_thr_list = []
+	elif model_flag == 3:
+		column_to_use_fn = 'config/f_3_af'
+		data_file = 'data/test'
+		discret_list = [76,77,78,79,80,81,82,83,84]
+		binar_list = []
+		binar_thr_list = []
+	else :
+		column_to_use_fn = 'config/f_4_af'
+		data_file = 'data/test'
+		discret_list = [6,7,8,9,10,11,12,13,14]
+		binar_list = []
+		binar_thr_list = []
+	#---customize------------------------------------->>>>>>
+	
+	#---start---
 	start_time = datetime.now()
 	(X_selected, y) = main(column_list_fn_ori = column_list_fn_ori, column_list_fn_new = column_list_fn_new, column_to_use_fn = column_to_use_fn, data_file = data_file, \
 		stand_flag = stand_flag, discret_list = discret_list, binar_list = binar_list, binar_thr_list = binar_thr_list, p=p)
@@ -131,9 +152,7 @@ if __name__ == '__main__':
 	print '\nsummary report:','\n','-'*100
 	print my_report(y,y_)[1]
 	print '\nROC curve area:','\n','-'*100
-	print my_PRC(map(int, y.tolist()), y_p)[0][100]
-	print my_PRC(map(int, y.tolist()), y_p)[1][100]
-	print my_PRC(map(int, y.tolist()), y_p)[2][100]
 	print my_PRC(map(int, y.tolist()), y_p)[3]
 	end_time =  datetime.now()
 	print 'time_cost:', str(end_time - start_time)
+	print 'current Model:', model_flag
