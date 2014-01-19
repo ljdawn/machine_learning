@@ -17,3 +17,7 @@ arr = np.ones(5)
 cube = np.zeros((5,5,5)).astype(int) + 1
 
 #---array can store other type data---
+recarr = np.zeros((2,), dtype=('i4,f4,a10'))
+toadd = [(1,2.,'Hello'),(2,3.,"World")]
+recarr[:] = toadd
+print recarr
