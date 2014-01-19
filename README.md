@@ -5,4 +5,4 @@ machine_learning:
 with
 scikit-learn, gensim, networkx,
 GraphCHI, Igraph
-Scipy, PyMC
+Scipy, PyMC, statsmodels

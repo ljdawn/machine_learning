@@ -36,3 +36,22 @@ out0 = stats.normaltest(sample)
 out1= stats.kstest(sample, 'norm')
 out2 = stats.kstest(sample, 'wald')
 print out2
+
+"""
+Array Creation
+arange, array, copy, empty, empty_like, eye, fromfile, fromfunction, identity, linspace, logspace, mgrid, ogrid, ones, ones_like, r , zeros, zeros_like
+Conversions
+astype, atleast 1d, atleast 2d, atleast 3d, mat
+Manipulations
+array split, column stack, concatenate, diagonal, dsplit, dstack, hsplit, hstack, item, newaxis, ravel, repeat, reshape, resize, squeeze, swapaxes, take, transpose, vsplit, vstack
+Questions
+all, any, nonzero, where
+Ordering
+argmax, argmin, argsort, max, min, ptp, searchsorted, sort
+Operations
+choose, compress, cumprod, cumsum, inner, fill, imag, prod, put, putmask, real, sum
+Basic Statistics
+cov, mean, std, var
+Basic Linear Algebra
+cross, dot, outer, svd, vdot
+"""
