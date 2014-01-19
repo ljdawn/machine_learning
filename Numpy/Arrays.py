@@ -1,5 +1,5 @@
 import numpy as np
-#---array---
+#---array-------------------------------------------------------------------------
 #ndarray is ~25 faster then python loops.
 #matrix can only will be two dimensional.
 
@@ -20,4 +20,25 @@ cube = np.zeros((5,5,5)).astype(int) + 1
 recarr = np.zeros((2,), dtype=('i4,f4,a10'))
 toadd = [(1,2.,'Hello'),(2,3.,"World")]
 recarr[:] = toadd
-print recarr
+
+#---index and slicing---
+"""np.where(), np.delete()"""
+arr = np.arange(5)
+index = np.where(arr > 2)
+new_arr = np.delete(arr, index)
+"""same with
+index = arr > 2
+print(index)
+[False False True True True]
+new_arr = arr[index]
+"""
+#---Boolean Statements-------------------------------------------------------------------------
+"""as before"""
+import numpy as np
+import numpy.random as rand
+a = rand.randn(100)
+index = a > 0.2
+b = a[index]
+
+#---math-------------------------------------------------------------------------
+#Linear Algebra
