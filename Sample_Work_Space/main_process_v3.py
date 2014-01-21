@@ -2,12 +2,14 @@
 ====================
 data processing 
 working with numpy&pandas
+
+**main_pandas is 3times faster
 ====================
 
 """
 __author__ = """\n""".join(['Xuan Zhang'])
 
-__version__ ="""2013-01-21"""
+__version__ ="""2013-01-22"""
 
 __all__ = ['']
 
@@ -102,7 +104,6 @@ def main(column_list_fn_ori, column_list_fn_new, column_to_use_fn, data_file, di
 	timer(Label_selected_ALL) 
 	timer(len(Label_selected_ALL))
 	return (X_selected, y)
-
 def main_pandas(column_list_fn_ori, column_list_fn_new, column_to_use_fn, data_file, discret_list, binar_list, binar_thr_list, stand_flag = 0, p=0.05):
 	#---process start---
 	column_label_ori = get_list(column_list_fn_ori)
@@ -194,8 +195,8 @@ if __name__ == '__main__':
 	
 	#term 0==================================================
 	#---start---
-	#start_time = datetime.now()
-	(X_selected, y) = main(column_list_fn_ori = column_list_fn_ori, column_list_fn_new = column_list_fn_new, column_to_use_fn = column_to_use_fn, data_file = data_file, \
+	start_time = datetime.now()
+	(X_selected, y) = main_pandas(column_list_fn_ori = column_list_fn_ori, column_list_fn_new = column_list_fn_new, column_to_use_fn = column_to_use_fn, data_file = data_file, \
 		stand_flag = stand_flag, discret_list = discret_list, binar_list = binar_list, binar_thr_list = binar_thr_list, p=p)
 	print (X_selected, y)
 	#timer('<< -- training logstic model-- >>')
@@ -210,12 +211,16 @@ if __name__ == '__main__':
 	#print my_report(y,y_)[1]
 	#print '\nROC curve area:','\n','-'*100
 	#print my_PRC(map(int, y.tolist()), y_p)[3]
-	#end_time =  datetime.now()
-	#print 'time_cost:', str(end_time - start_time)
+	end_time =  datetime.now()
+	print 'time_cost:', str(end_time - start_time)
 	#print 'current Model:', model_flag
 	#term 0==================================================
 
 	#term 1==================================================
-	(X_selected, y) = main_pandas(column_list_fn_ori = column_list_fn_ori, column_list_fn_new = column_list_fn_new, column_to_use_fn = column_to_use_fn, data_file = data_file, \
+	start_time = datetime.now()
+	(X_selected, y) = main(column_list_fn_ori = column_list_fn_ori, column_list_fn_new = column_list_fn_new, column_to_use_fn = column_to_use_fn, data_file = data_file, \
 		stand_flag = stand_flag, discret_list = discret_list, binar_list = binar_list, binar_thr_list = binar_thr_list, p=p)
 	print (X_selected, y)
+	end_time =  datetime.now()
+	print 'time_cost:', str(end_time - start_time)
+	#term 1==================================================
