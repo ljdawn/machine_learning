@@ -22,6 +22,7 @@ from sklearn import linear_model
 import numpy as np
 import pandas as pd
 import itertools
+import math
 from datetime import datetime
 
 #---tool_box common functions---
@@ -69,8 +70,7 @@ def main(column_list_fn_ori, column_list_fn_new, column_to_use_fn, data_file, di
 	column_to_use_list = get_list(column_to_use_fn)
 	column_new_list = get_new_list(column_label_new, column_to_use_list)
 	data_matrix_eff = column_picker(data_matrix_new, column_new_list)
-	data_matrix_eff_float = [map(lambda x:float(x) if x != 'NULL' else 0, line) for line in data_matrix_eff.tolist()]	
-
+	data_matrix_eff_float = [map(lambda x:float(x) if x != 'NULL' else 0, line) for line in data_matrix_eff.tolist()]
 	#<<step 2 -- preprossing data_matrix-- >>
 	#def column type
 	(X, process_summary) = preprocess(data_matrix_eff_float, stand_flag = stand_flag, discret_list = discret_list, binar_list = binar_list)
@@ -86,7 +86,9 @@ def main(column_list_fn_ori, column_list_fn_new, column_to_use_fn, data_file, di
 	feature_index = range(len(X_X_filter))
 	feature_selected_index = list(itertools.compress(feature_index, map(lambda x:x < p, X_X_filter)))
 	X_selected = column_picker(X, feature_selected_index)
-	label_before = [column_label_new[x] for x in column_new_list]
+	label_before = column_to_use_list
+	#label_before = [column_label_new[x] for x in column_new_list]
+	print label_before
 	Label_A = [label_before[x] for x in range(nochange_[0], nochange_[1])]
 	Label_B = [label_before[x] for x in range(binarized_[0], binarized_[1])]
 	Label_C_t = [label_before[x] for x in range(discret_[0], len(label_before))]
@@ -108,14 +110,45 @@ def main_pandas(column_list_fn_ori, column_list_fn_new, column_to_use_fn, data_f
 	column_label_ori = get_list(column_list_fn_ori)
 	column_label_new = get_list(column_list_fn_new)
 	data_matrix = get_table(data_file, column_label_ori)
-	column_to_use = get_list(column_to_use_fn)
-	data_matrix_eff = data_matrix[column_to_use]
-	print data_matrix_eff['flag_own_site']
-
+	column_to_use_list = get_list(column_to_use_fn)
+	data_matrix_eff = data_matrix[column_to_use_list].values
+	data_matrix_eff_float = [map(lambda x:float(x) if not math.isnan(x) else 0, line) for line in data_matrix_eff.tolist()]
+	#<<step 2 -- preprossing data_matrix-- >>
+	#def column type
+	(X, process_summary) = preprocess(data_matrix_eff_float, stand_flag = stand_flag, discret_list = discret_list, binar_list = binar_list)
+	nochange_ = process_summary['no change column']
+	discret_ = process_summary['discret column']
+	binarized_ = process_summary['binarized column']
+	cate_class = process_summary['categorize_class']
+	#<<step 3 -- get flag-- >>
+	y = np.array(get_One_col(data_file))
+	#<<step 4 -- feature_selection -- >>
+	X_F = X - X.min() 
+	X_X_filter = my_FS(X_F, y)[1]
+	feature_index = range(len(X_X_filter))
+	feature_selected_index = list(itertools.compress(feature_index, map(lambda x:x < p, X_X_filter)))
+	X_selected = column_picker(X, feature_selected_index)
+	label_before = data_matrix[column_to_use_list].keys().tolist()
+	print label_before
+	Label_A = [label_before[x] for x in range(nochange_[0], nochange_[1])]
+	Label_B = [label_before[x] for x in range(binarized_[0], binarized_[1])]
+	Label_C_t = [label_before[x] for x in range(discret_[0], len(label_before))]
+	Label_C = [itertools.repeat(Label_C_t[i], int(cate_class[i])) for i in range(len(cate_class))]
+	Label_ALL = Label_A+Label_B
+	for ite in Label_C:
+		n = 0
+		for it in list(ite):
+			Label_ALL.append(it + '_'+str(n))
+			n += 1
+	timer('selected feature base on X2(p<'+str(p)+'):'+'\n'+'-'*100)
+	Label_selected_ALL = [Label_ALL[x] for x in feature_selected_index]
+	timer(Label_selected_ALL) 
+	timer(len(Label_selected_ALL))
+	return (X_selected, y)
 
 
 if __name__ == '__main__':
-	model_flag = 4
+	model_flag = 0
 	stand_flag = 0
 	#---config/data files---
 	column_list_fn_ori = 'config/head_ori'
@@ -144,10 +177,17 @@ if __name__ == '__main__':
 		discret_list = [76,77,78,79,80,81,82,83,84]
 		binar_list = []
 		binar_thr_list = []
-	else :
+	elif model_flag == 4:
 		column_to_use_fn = 'config/f_4_af'
 		data_file = 'data/wt_sample_4_201110.txt'
 		discret_list = [6,7,8,9,10,11,12,13,14]
+		binar_list = []
+		binar_thr_list = []
+	else:
+		model_flag = 'test data'
+		column_to_use_fn = 'config/works'
+		data_file = 'data/test'
+		discret_list = []
 		binar_list = []
 		binar_thr_list = []
 	#---customize------------------------------------->>>>>>
@@ -155,9 +195,9 @@ if __name__ == '__main__':
 	#term 0==================================================
 	#---start---
 	#start_time = datetime.now()
-	#(X_selected, y) = main(column_list_fn_ori = column_list_fn_ori, column_list_fn_new = column_list_fn_new, column_to_use_fn = column_to_use_fn, data_file = data_file, \
-	#	stand_flag = stand_flag, discret_list = discret_list, binar_list = binar_list, binar_thr_list = binar_thr_list, p=p)
-
+	(X_selected, y) = main(column_list_fn_ori = column_list_fn_ori, column_list_fn_new = column_list_fn_new, column_to_use_fn = column_to_use_fn, data_file = data_file, \
+		stand_flag = stand_flag, discret_list = discret_list, binar_list = binar_list, binar_thr_list = binar_thr_list, p=p)
+	print (X_selected, y)
 	#timer('<< -- training logstic model-- >>')
 	#LLM = linear_model.LogisticRegression(tol = tol, penalty = penalty, C = C)
 	#Model = LLM.fit(X_selected, y)
@@ -176,5 +216,6 @@ if __name__ == '__main__':
 	#term 0==================================================
 
 	#term 1==================================================
-	main_pandas(column_list_fn_ori = column_list_fn_ori, column_list_fn_new = column_list_fn_new, column_to_use_fn = column_to_use_fn, data_file = data_file, \
+	(X_selected, y) = main_pandas(column_list_fn_ori = column_list_fn_ori, column_list_fn_new = column_list_fn_new, column_to_use_fn = column_to_use_fn, data_file = data_file, \
 		stand_flag = stand_flag, discret_list = discret_list, binar_list = binar_list, binar_thr_list = binar_thr_list, p=p)
+	print (X_selected, y)
