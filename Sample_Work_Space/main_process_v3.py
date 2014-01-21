@@ -63,6 +63,7 @@ def main(column_list_fn_ori, column_list_fn_new, column_to_use_fn, data_file, di
 	column_label_ori = get_list(column_list_fn_ori)
 	column_label_new = get_list(column_list_fn_new)
 	column_num_new = column_get_label_num(column_label_ori, column_label_new)
+
 	#get ori_matrix new matrix
 	data_matrix_ori = get_data_matrix(data_file)
 	data_matrix_new = column_rearrange_num(data_matrix_ori, column_num_new)
