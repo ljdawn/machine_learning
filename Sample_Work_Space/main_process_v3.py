@@ -34,6 +34,7 @@ column_picker = SZ.column_picker
 column_rearrange_num = SZ.column_rearrange_num
 column_get_label_num = SZ.column_get_label_num
 preprocess = SZ.preprocess
+my_binarizer = SZ.my_binarizer
 my_report = ST.my_report
 my_PRC = SF.my_PRC
 my_CV = SS.my_CV
@@ -83,7 +84,7 @@ def main(column_list_fn_ori, column_list_fn_new, column_to_use_fn, data_file, di
 	binarized_ = process_summary['binarized column']
 	cate_class = process_summary['categorize_class']
 	#<<step 3 -- get flag-- >>
-	y = np.array(get_One_col(data_file))
+	y = np.array(map(float, get_One_col(data_file)))
 	#<<step 4 -- feature_selection -- >>
 	X_F = X - X.min() 
 	X_X_filter = my_FS(X_F, y)[1]
@@ -125,7 +126,7 @@ def main_pandas(column_list_fn_ori, column_list_fn_new, column_to_use_fn, data_f
 	binarized_ = process_summary['binarized column']
 	cate_class = process_summary['categorize_class']
 	#<<step 3 -- get flag-- >>
-	y = np.array(get_One_col(data_file))
+	y = np.array(map(float, get_One_col(data_file)))
 	#<<step 4 -- feature_selection -- >>
 	X_F = X - X.min() 
 	X_X_filter = my_FS(X_F, y)[1]
@@ -151,7 +152,7 @@ def main_pandas(column_list_fn_ori, column_list_fn_new, column_to_use_fn, data_f
 
 
 if __name__ == '__main__':
-	model_flag = 2
+	model_flag = 4
 	stand_flag = 0
 	#---config/data files---
 	column_list_fn_ori = 'config/head_ori'
@@ -160,29 +161,30 @@ if __name__ == '__main__':
 	tol =  1e-8
 	penalty = 'l1'
 	C = 1
-	p = 0.05	
+	p = 0.05
+	logstic_threshold = 0.2	
 	#---customize------------------------------------->>>>>>
 	if model_flag == 1:
 		column_to_use_fn = 'config/f_1_af'
-		data_file = 'data/wt_sample_1_201110.txt'
+		data_file = 'data/wt_sample1.out'
 		discret_list = [98,99,100,101,102,103]
 		binar_list = []
 		binar_thr_list = []
 	elif model_flag == 2:
 		column_to_use_fn = 'config/f_2_af'
-		data_file = 'data/wt_sample_2_201110.txt'
+		data_file = 'data/wt_sample2.out'
 		discret_list = [4,5,6,7,8,9]
 		binar_list = []
 		binar_thr_list = []
 	elif model_flag == 3:
 		column_to_use_fn = 'config/f_3_af'
-		data_file = 'data/wt_sample_3_201110.txt'
+		data_file = 'data/wt_sample3.out'
 		discret_list = [76,77,78,79,80,81,82,83,84]
 		binar_list = []
 		binar_thr_list = []
 	elif model_flag == 4:
 		column_to_use_fn = 'config/f_4_af'
-		data_file = 'data/wt_sample_4_201110.txt'
+		data_file = 'data/wt_sample4.out'
 		discret_list = [6,7,8,9,10,11,12,13,14]
 		binar_list = []
 		binar_thr_list = []
@@ -194,20 +196,21 @@ if __name__ == '__main__':
 		binar_list = []
 		binar_thr_list = []
 	#---customize------------------------------------->>>>>>
+	start_time = datetime.now()
 	#term 0 ==================================================
 	#mining
-	column_label_ori = get_list(column_list_fn_ori)
-	pre_data = get_table(data_file, column_label_ori)
-	tclo = np.array(pre_data['inpg_ays'] - pre_data['inpg_ays'].mean())
+	#column_label_ori = get_list(column_list_fn_ori)
+	#pre_data = get_table(data_file, column_label_ori)
+	#tclo = np.array(pre_data['inpg_ays'] - pre_data['inpg_ays'].mean())
 	#tclo = tclo[np.where(tclo != -1)]
 	#t-test mean test (t-value, p-value, two_sided p < 0.05 -> mean -> 0)
-	res_sm = sm.stats.DescrStatsW(tclo).ztest_mean()
-	res_st = stats.ttest_1samp(tclo, 0.0)
-	print res_sm, res_st
+	#res_sm = sm.stats.DescrStatsW(tclo).ztest_mean()
+	#res_st = stats.ttest_1samp(tclo, 0.0)
+	#print res_sm, res_st
 	#vat - test
 	#term 0 ==================================================
+
 	#term 1-1 ==================================================
-	#start_time = datetime.now()
 	"""data processing : 1, origin data column (order) rearragement(optional) -> to fit the format. <continuous>:<binary>:<discrest box> 
 	                2, column picking(optional) -> to fit the model.
 					3, processing data -> to fit the format for machine learning(training part).
@@ -217,55 +220,58 @@ if __name__ == '__main__':
 	#(X_selected, y) = main(column_list_fn_ori = column_list_fn_ori, column_list_fn_new = column_list_fn_new, column_to_use_fn = column_to_use_fn, data_file = data_file, \
 	#	stand_flag = stand_flag, discret_list = discret_list, binar_list = binar_list, binar_thr_list = binar_thr_list, p=p)
 	#print (X_selected, y)
-	#timer('<< -- training logstic model-- >>')
-	"""training logstic model: 1, y_ -> predicted values 2, -> predicted values in probility"""
-	#LLM = linear_model.LogisticRegression(tol = tol, penalty = penalty, C = C)
-	#Model = LLM.fit(X_selected, y)
-	#y_ = Model.predict(X_selected)
-	#y_p = [b for [a, b] in Model.predict_proba(X_selected)]	
-	#timer('<< -- validation-- >>')
-	#print '\nconfusion_matrix:','\n','-'*100
-	"""confusion_matrix"""
-	#print my_report(y,y_)[0]
-	#print '\nsummary report:','\n','-'*100
-	"""detailed report"""
-	#print my_report(y,y_)[1]
-	#print '\nROC curve area:','\n','-'*100
-	"""ROC curve"""
-	#print my_PRC(map(int, y.tolist()), y_p)[3]
-	#end_time =  datetime.now()
-	#print 'time_cost:', str(end_time - start_time)
-	#print 'current Model:', model_flag
 	#term 1-1 ==================================================
 
 	#term 1-2 ==================================================
-	#start_time = datetime.now()
 	"""data processing : 1, origin data column (order) rearragement(optional) -> to fit the format. <continuous>:<binary>:<discrest box> 
 		                2, column picking(optional) -> to fit the model.
 						3, processing data -> to fit the format for machine learning(training part).
 						4, feature selection -> to fit the model.
 						5, get the <y>s. -> to fit the format for machine learning(training part).
 						"""
-	#(X_selected, y) = main_pandas(column_list_fn_ori = column_list_fn_ori, column_list_fn_new = column_list_fn_new, column_to_use_fn = column_to_use_fn, data_file = data_file, \
-	#	stand_flag = stand_flag, discret_list = discret_list, binar_list = binar_list, binar_thr_list = binar_thr_list, p=p)
-	#print (X_selected, y)
-	#timer('<< -- training logstic model-- >>')
-	"""training logstic model: 1, y_ -> predicted values 2, -> predicted values in probility"""
-	#LLM = linear_model.LogisticRegression(tol = tol, penalty = penalty, C = C)
-	#Model = LLM.fit(X_selected, y)
-	#y_ = Model.predict(X_selected)
-	#y_p = [b for [a, b] in Model.predict_proba(X_selected)]	
-	#timer('<< -- validation-- >>')
-	#print '\nconfusion_matrix:','\n','-'*100
-	"""confusion_matrix"""
-	#print my_report(y,y_)[0]
-	#print '\nsummary report:','\n','-'*100
-	"""detailed report"""
-	#print my_report(y,y_)[1]
-	#print '\nROC curve area:','\n','-'*100
-	"""ROC curve"""
-	#print my_PRC(map(int, y.tolist()), y_p)[3]
-	#end_time =  datetime.now()
-	#print 'time_cost:', str(end_time - start_time)
-	#print 'current Model:', model_flag
+	(X_selected, y) = main_pandas(column_list_fn_ori = column_list_fn_ori, column_list_fn_new = column_list_fn_new, column_to_use_fn = column_to_use_fn, data_file = data_file, \
+		stand_flag = stand_flag, discret_list = discret_list, binar_list = binar_list, binar_thr_list = binar_thr_list, p=p)
 	#term 1-2 ==================================================
+
+	#term 2-1 ==================================================
+	timer('<< -- training logstic model-- >>')
+	"""training logstic model: 1, y_ -> predicted values 2, -> predicted values in probility"""
+	LLM = linear_model.LogisticRegression(tol = tol, penalty = penalty, C = C)
+	Model = LLM.fit(X_selected, y)
+	y_ori = Model.predict(X_selected)
+	y_p = [b for [a, b] in Model.predict_proba(X_selected)]
+	y_ = my_binarizer(y_p, logstic_threshold)
+	#term 2-1 ==================================================
+	
+	#term 3 ==================================================
+	timer('<< -- validation-- >>')
+	print '\nconfusion_matrix:','\n','-'*100
+	"""confusion_matrix"""
+	print my_report(y,y_)[0]
+	"""plot ROC curve only in windows"""
+	#import pylab as pl
+	#pl.clf()
+	#pl.plot(my_PRC(y,y_)[0], my_PRC(y,y_)[1], label='ROC curve (area = %0.2f)' % my_PRC(y,y_)[3])
+	#pl.plot([0, 1], [0, 1], 'k--')
+	#pl.xlim([0.0, 1.0])
+	#pl.ylim([0.0, 1.0])
+	#pl.xlabel('False Positive Rate')
+	#pl.ylabel('True Positive Rate')
+	#pl.title('Receiver operating characteristic example')
+	#pl.legend(loc="lower right")
+	#pl.show()
+	#term 3 ==================================================
+
+	#term 4 ==================================================
+	print '\nsummary report:','\n','-'*100
+	"""detailed report"""
+	print my_report(y,y_)[1]
+	print '\nROC curve area:','\n','-'*100
+	"""ROC curve"""
+	print my_PRC(map(int, y.tolist()), y_p)[3]
+	end_time =  datetime.now()
+	print 'time_cost:', str(end_time - start_time)
+	print 'current Model:', model_flag
+	#term 4 ==================================================
+
+	#term 5 ==================================================
