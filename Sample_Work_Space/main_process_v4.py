@@ -109,8 +109,8 @@ def main(column_list_fn_ori, column_list_fn_new, column_to_use_fn, data_file, di
 			n += 1
 	timer('selected feature base on X2(p<'+str(p)+'):'+'\n'+'-'*100)
 	Label_selected_ALL = [Label_ALL[x] for x in feature_selected_index]
-	timer(Label_selected_ALL) 
-	timer(len(Label_selected_ALL))
+	#timer(Label_selected_ALL) 
+	#timer(len(Label_selected_ALL))
 	return (X_selected, y, Label_selected_ALL)
 def main_pandas(column_list_fn_ori, column_list_fn_new, column_to_use_fn, data_file, discret_list, binar_list, binar_thr_list, stand_flag = 0, p = 0.05):
 	#---process start---
@@ -149,10 +149,10 @@ def main_pandas(column_list_fn_ori, column_list_fn_new, column_to_use_fn, data_f
 		for it in list(ite):
 			Label_ALL.append(it + '_' + str(n))
 			n += 1
-	timer('selected feature base on X2(p<'+str(p)+'):'+'\n'+'-'*100)
+	#timer('selected feature base on X2(p<'+str(p)+'):'+'\n'+'-'*100)
 	Label_selected_ALL = [Label_ALL[x] for x in feature_selected_index]
-	timer(Label_selected_ALL) 
-	timer(len(Label_selected_ALL))
+	#timer(Label_selected_ALL) 
+	#timer(len(Label_selected_ALL))
 	return (X_selected, y, feature_selected_index)
 
 def main_pandas_for_test(data_file, feature_selected_index, column_list_fn_ori, column_list_fn_new, column_to_use_fn, stand_flag, discret_list, binar_list, binar_thr_list):
@@ -240,11 +240,9 @@ if __name__ == '__main__':
 							"""
 		(X_selected, y, F_selected) = main_pandas(column_list_fn_ori = column_list_fn_ori, column_list_fn_new = column_list_fn_new, column_to_use_fn = column_to_use_fn, data_file = data_file, \
 			stand_flag = stand_flag, discret_list = discret_list, binar_list = binar_list, binar_thr_list = binar_thr_list, p = p)
-		(X_selected_test, y_test) = main_pandas_for_test(data_file = data_file_test, feature_selected_index = F_selected, column_list_fn_ori = column_list_fn_ori, column_list_fn_new = column_list_fn_new, column_to_use_fn = column_to_use_fn,\
-			stand_flag = stand_flag, discret_list = discret_list, binar_list = binar_list, binar_thr_list = binar_thr_list)
 		#term 1-2 ==================================================
 	
-		#term 2-1 ==================================================
+		#term 2 ==================================================
 		timer('<< -- training '+ model_M +' -- >>')
 		"""training model: 1, y_ -> predicted values 2, -> predicted values in probility"""
 		if model_M == 'logstic':
@@ -260,47 +258,54 @@ if __name__ == '__main__':
 		elif model_M == 'AdaBoost':
 			M = AdaBoostClassifier(n_estimators = len(y))
 		Model = M.fit(X_selected, y)
-		y_ori = Model.predict(X_selected_test)
-		y_p = [b for [a, b] in Model.predict_proba(X_selected_test)]
-		y_ = my_binarizer(y_p, logstic_threshold)
-		y = y_test
-		#print y, y_
-		#term 2-1 ==================================================
+		"""predicting"""
+		for da_t in data_file_test:
+			timer('<< -- predicting '+ da_t +' -- >>')
+			(X_selected_test, y_test) = main_pandas_for_test(data_file = da_t, feature_selected_index = F_selected, column_list_fn_ori = column_list_fn_ori, column_list_fn_new = column_list_fn_new, column_to_use_fn = column_to_use_fn,\
+				stand_flag = stand_flag, discret_list = discret_list, binar_list = binar_list, binar_thr_list = binar_thr_list)
+			y_ori = Model.predict(X_selected_test)
+			y_p = [b for [a, b] in Model.predict_proba(X_selected_test)]
+			y_ = my_binarizer(y_p, logstic_threshold)
+			y = y_test
+			#print y, y_
+			#term 2 ==================================================
+			
+			#term 3 ==================================================
+			print 'confusion_matrix:'
+			"""confusion_matrix"""
+			print 'CMAT', '[0]','----', '[1]'
+			print '[0]', '|', my_report(y,y_)[0][0][0], '\t', my_report(y,y_)[0][0][1], '|' 
+			print '[1]', '|', my_report(y,y_)[0][1][0], '\t', my_report(y,y_)[0][1][1], '|'
+			"""plot ROC curve only in windows"""
+			if ROC_plot == 'enable':
+				import pylab as pl
+				pl.clf()
+				pl.plot(my_PRC(y,y_)[0], my_PRC(y,y_)[1], label='ROC curve (area = %0.2f)' % my_PRC(y,y_)[3])
+				pl.plot([0, 1], [0, 1], 'k--')
+				pl.xlim([0.0, 1.0])
+				pl.ylim([0.0, 1.0])
+				pl.xlabel('False Positive Rate')
+				pl.ylabel('True Positive Rate')
+				pl.title('Receiver operating characteristic example')
+				pl.legend(loc="lower right")
+				pl.show()
+			#term 3 ==================================================
 		
-		#term 3 ==================================================
-		print '\nconfusion_matrix:','\n','-'*100
-		"""confusion_matrix"""
-		print my_report(y,y_)[0]
-		"""plot ROC curve only in windows"""
-		if ROC_plot == 'enable':
-			import pylab as pl
-			pl.clf()
-			pl.plot(my_PRC(y,y_)[0], my_PRC(y,y_)[1], label='ROC curve (area = %0.2f)' % my_PRC(y,y_)[3])
-			pl.plot([0, 1], [0, 1], 'k--')
-			pl.xlim([0.0, 1.0])
-			pl.ylim([0.0, 1.0])
-			pl.xlabel('False Positive Rate')
-			pl.ylabel('True Positive Rate')
-			pl.title('Receiver operating characteristic example')
-			pl.legend(loc="lower right")
-			pl.show()
-		#term 3 ==================================================
-	
-		#term 4 ==================================================
-		print '\nsummary report:','\n','-'*100
-		"""detailed report"""
-		print my_report(y,y_)[1]
-		print '\nROC curve area:','\n','-'*100
-		"""ROC curve"""
-		print my_PRC(map(int, y.tolist()), y_p)[3]
-		#term 4 ==================================================
-	
-		#term 5 ==================================================
-		if CV_score == 'enable':
-			print '\nCV_score :','\n','-'*100
-			func = M
-			print my_CV(X_selected, y, func, cv_fold)
-		#term 5 ==================================================
-		end_time =  datetime.now()
-		print 'time_cost:', str(end_time - start_time)
-		print 'current Model:', model_flag, '\n', 'current Classifier:', model_M
+			#term 4 ==================================================
+			print 'summary report:'
+			"""detailed report"""
+			print my_report(y,y_)[1]
+			#print '\nROC curve area:','\n','-'*100
+			#"""ROC curve"""
+			#print my_PRC(map(int, y.tolist()), y_p)[3]
+			#term 4 ==================================================
+		
+			#term 5 ==================================================
+			if CV_score == 'enable':
+				print '\nCV_score :','\n'
+				func = M
+				print my_CV(X_selected, y, func, cv_fold)
+			#term 5 ==================================================
+			end_time =  datetime.now()
+			print 'time_cost:', str(end_time - start_time)
+			print 'current Model:', model_flag, '\n', 'current Classifier:', model_M, '\n','-'*100, '\n'

@@ -7,7 +7,7 @@
 	"method" : "logstic",
 	"column_list_fn_ori" : "config/head_ori",
 	"column_list_fn_new" : "config/head_new",
-	"tol" : 1e-4,
+	"tol" : 1e-8,
 	"penalty" : "l1",
 	"C" : 1,
 	"logstic_threshold" : 0.1,
@@ -28,7 +28,17 @@
 			"2" : 
 				{"column_to_use_fn" : "config/f_2_af", 
 				"data_file" : "data/wt_sample_2_201201.txt", 
-				"data_file_test" : "data/wt_sample_2_201202.txt", 
+				"data_file_test" : 
+					[
+						"data/wt_sample_2_201202.txt", 
+						"data/wt_sample_2_201203.txt",
+						"data/wt_sample_2_201204.txt", 
+						"data/wt_sample_2_201205.txt",
+						"data/wt_sample_2_201206.txt", 
+						"data/wt_sample_2_201207.txt",
+						"data/wt_sample_2_201208.txt", 
+						"data/wt_sample_2_201209.txt"
+					],
 				"discret_list" : [4,5,6,7,8,9], 
 				"binar_list" : [], 
 				"binar_thr_list" : []
