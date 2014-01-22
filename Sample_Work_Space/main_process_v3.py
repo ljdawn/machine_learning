@@ -1,7 +1,7 @@
 """
 ====================
-data processing 
-working with numpy&pandas
+model 
+working with numpy, pandas, scikit-learn
 
 **main_pandas is 3times faster
 ====================
@@ -139,7 +139,7 @@ def main_pandas(column_list_fn_ori, column_list_fn_new, column_to_use_fn, data_f
 	for ite in Label_C:
 		n = 0
 		for it in list(ite):
-			Label_ALL.append(it + '_'+str(n))
+			Label_ALL.append(it + '_' + str(n))
 			n += 1
 	timer('selected feature base on X2(p<'+str(p)+'):'+'\n'+'-'*100)
 	Label_selected_ALL = [Label_ALL[x] for x in feature_selected_index]
@@ -149,7 +149,7 @@ def main_pandas(column_list_fn_ori, column_list_fn_new, column_to_use_fn, data_f
 
 
 if __name__ == '__main__':
-	model_flag = 0
+	model_flag = 2
 	stand_flag = 0
 	#---config/data files---
 	column_list_fn_ori = 'config/head_ori'
@@ -192,35 +192,70 @@ if __name__ == '__main__':
 		binar_list = []
 		binar_thr_list = []
 	#---customize------------------------------------->>>>>>
-	
-	#term 0==================================================
-	#---start---
-	start_time = datetime.now()
-	(X_selected, y) = main_pandas(column_list_fn_ori = column_list_fn_ori, column_list_fn_new = column_list_fn_new, column_to_use_fn = column_to_use_fn, data_file = data_file, \
-		stand_flag = stand_flag, discret_list = discret_list, binar_list = binar_list, binar_thr_list = binar_thr_list, p=p)
-	print (X_selected, y)
+	#term 0 ==================================================
+	#mining
+	pre_data = get_table(data_file)
+	#term 0 ==================================================
+	#term 1-1 ==================================================
+	#start_time = datetime.now()
+	"""data processing : 1, origin data column (order) rearragement(optional) -> to fit the format. <continuous>:<binary>:<discrest box> 
+	                2, column picking(optional) -> to fit the model.
+					3, processing data -> to fit the format for machine learning(training part).
+					4, feature selection -> to fit the model.
+					5, get the <y>s. -> to fit the format for machine learning(training part).
+					"""
+	#(X_selected, y) = main(column_list_fn_ori = column_list_fn_ori, column_list_fn_new = column_list_fn_new, column_to_use_fn = column_to_use_fn, data_file = data_file, \
+	#	stand_flag = stand_flag, discret_list = discret_list, binar_list = binar_list, binar_thr_list = binar_thr_list, p=p)
+	#print (X_selected, y)
 	#timer('<< -- training logstic model-- >>')
+	"""training logstic model: 1, y_ -> predicted values 2, -> predicted values in probility"""
 	#LLM = linear_model.LogisticRegression(tol = tol, penalty = penalty, C = C)
 	#Model = LLM.fit(X_selected, y)
 	#y_ = Model.predict(X_selected)
 	#y_p = [b for [a, b] in Model.predict_proba(X_selected)]	
 	#timer('<< -- validation-- >>')
 	#print '\nconfusion_matrix:','\n','-'*100
+	"""confusion_matrix"""
 	#print my_report(y,y_)[0]
 	#print '\nsummary report:','\n','-'*100
+	"""detailed report"""
 	#print my_report(y,y_)[1]
 	#print '\nROC curve area:','\n','-'*100
+	"""ROC curve"""
 	#print my_PRC(map(int, y.tolist()), y_p)[3]
-	end_time =  datetime.now()
-	print 'time_cost:', str(end_time - start_time)
+	#end_time =  datetime.now()
+	#print 'time_cost:', str(end_time - start_time)
 	#print 'current Model:', model_flag
-	#term 0==================================================
+	#term 1-1 ==================================================
 
-	#term 1==================================================
-	start_time = datetime.now()
-	(X_selected, y) = main(column_list_fn_ori = column_list_fn_ori, column_list_fn_new = column_list_fn_new, column_to_use_fn = column_to_use_fn, data_file = data_file, \
-		stand_flag = stand_flag, discret_list = discret_list, binar_list = binar_list, binar_thr_list = binar_thr_list, p=p)
-	print (X_selected, y)
-	end_time =  datetime.now()
-	print 'time_cost:', str(end_time - start_time)
-	#term 1==================================================
+	#term 1-2 ==================================================
+	#start_time = datetime.now()
+	"""data processing : 1, origin data column (order) rearragement(optional) -> to fit the format. <continuous>:<binary>:<discrest box> 
+		                2, column picking(optional) -> to fit the model.
+						3, processing data -> to fit the format for machine learning(training part).
+						4, feature selection -> to fit the model.
+						5, get the <y>s. -> to fit the format for machine learning(training part).
+						"""
+	#(X_selected, y) = main_pandas(column_list_fn_ori = column_list_fn_ori, column_list_fn_new = column_list_fn_new, column_to_use_fn = column_to_use_fn, data_file = data_file, \
+	#	stand_flag = stand_flag, discret_list = discret_list, binar_list = binar_list, binar_thr_list = binar_thr_list, p=p)
+	#print (X_selected, y)
+	#timer('<< -- training logstic model-- >>')
+	"""training logstic model: 1, y_ -> predicted values 2, -> predicted values in probility"""
+	#LLM = linear_model.LogisticRegression(tol = tol, penalty = penalty, C = C)
+	#Model = LLM.fit(X_selected, y)
+	#y_ = Model.predict(X_selected)
+	#y_p = [b for [a, b] in Model.predict_proba(X_selected)]	
+	#timer('<< -- validation-- >>')
+	#print '\nconfusion_matrix:','\n','-'*100
+	"""confusion_matrix"""
+	#print my_report(y,y_)[0]
+	#print '\nsummary report:','\n','-'*100
+	"""detailed report"""
+	#print my_report(y,y_)[1]
+	#print '\nROC curve area:','\n','-'*100
+	"""ROC curve"""
+	#print my_PRC(map(int, y.tolist()), y_p)[3]
+	#end_time =  datetime.now()
+	#print 'time_cost:', str(end_time - start_time)
+	#print 'current Model:', model_flag
+	#term 1-2 ==================================================

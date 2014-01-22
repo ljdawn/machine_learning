@@ -1,7 +1,7 @@
 """
 ====================
 data processing 
-working with numpy&pandas
+working with numpy, pandas, scikit-learn
 ====================
 
 """
