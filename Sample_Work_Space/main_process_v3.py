@@ -20,7 +20,9 @@ from tool_box import Step_Five_RoC as SF
 from tool_box import Step_Six_Cross_Validation as SS
 from tool_box import Step_Seven_Grid_Search as S7
 from tool_box import Step_One_Feature_Selection as SO
-from sklearn import linear_model
+from sklearn import linear_model, svm, tree
+from sklearn.naive_bayes import GaussianNB
+from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
 import numpy as np
 import pandas as pd
 import statsmodels.api as sm
@@ -154,20 +156,22 @@ def main_pandas(column_list_fn_ori, column_list_fn_new, column_to_use_fn, data_f
 if __name__ == '__main__':
 	model_flag = 4
 	stand_flag = 0
+	mehtod = 5
 	#---config/data files---
 	column_list_fn_ori = 'config/head_ori'
 	column_list_fn_new = 'config/head_new'
 	#---model setup---
-	tol =  1e-8
+	tol =  1e-4
 	penalty = 'l1'
 	C = 1
 	p = 0.05
-	logstic_threshold = 0.2
+	logstic_threshold = 0.5
 	cv_fold	= 3
 	#function switch
 	ROC_plot = 0
-	CV_score = 1
-
+	CV_score = 0
+	model_L = ['SVM', 'logstic', 'GaussianNB', 'DecisionTree', 'RandomForest', 'AdaBoost']
+	model_M = model_L[mehtod]
 	#---customize------------------------------------->>>>>>
 	if model_flag == 1:
 		column_to_use_fn = 'config/f_1_af'
@@ -189,7 +193,7 @@ if __name__ == '__main__':
 		binar_thr_list = []
 	elif model_flag == 4:
 		column_to_use_fn = 'config/f_4_af'
-		data_file = 'data/wt_sample4.out'
+		data_file = 'data/wt_sample_4_201209.txt'
 		discret_list = [6,7,8,9,10,11,12,13,14]
 		binar_list = []
 		binar_thr_list = []
@@ -239,13 +243,25 @@ if __name__ == '__main__':
 	#term 1-2 ==================================================
 
 	#term 2-1 ==================================================
-	timer('<< -- training logstic model-- >>')
+	timer('<< -- training '+ model_M +' -- >>')
 	"""training logstic model: 1, y_ -> predicted values 2, -> predicted values in probility"""
-	LLM = linear_model.LogisticRegression(tol = tol, penalty = penalty, C = C)
-	Model = LLM.fit(X_selected, y)
+	if model_M == 'logstic':
+		M = linear_model.LogisticRegression(tol = tol, penalty = penalty, C = C)
+	elif model_M == 'SVM':
+		M = svm.SVC(C = C, tol = tol, kernel='linear', probability = True)
+	elif model_M == 'GaussianNB':
+		M = GaussianNB()
+	elif model_M == 'DecisionTree':
+		M = tree.DecisionTreeClassifier()
+	elif model_M == 'RandomForest':
+		M = RandomForestClassifier(n_estimators = len(y))
+	elif model_M == 'AdaBoost':
+		M = AdaBoostClassifier(n_estimators = len(y))
+	Model = M.fit(X_selected, y)
 	y_ori = Model.predict(X_selected)
 	y_p = [b for [a, b] in Model.predict_proba(X_selected)]
 	y_ = my_binarizer(y_p, logstic_threshold)
+	print y, y_p
 	#term 2-1 ==================================================
 	
 	#term 3 ==================================================
@@ -275,15 +291,14 @@ if __name__ == '__main__':
 	print '\nROC curve area:','\n','-'*100
 	"""ROC curve"""
 	print my_PRC(map(int, y.tolist()), y_p)[3]
-
 	#term 4 ==================================================
 
 	#term 5 ==================================================
 	if CV_score == 1:
 		print '\nCV_score :','\n','-'*100
-		func = LLM
+		func = M
 		print my_CV(X_selected, y, func, cv_fold)
 	#term 5 ==================================================
 	end_time =  datetime.now()
 	print 'time_cost:', str(end_time - start_time)
-	print 'current Model:', model_flag
+	print 'current Model:', model_flag, '\n', 'current Classifier:', model_M
