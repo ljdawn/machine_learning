@@ -177,9 +177,10 @@ def main_pandas_for_test(data_file, feature_selected_index, column_list_fn_ori, 
 
 if __name__ == '__main__':
 	"""loop the set_up file"""
+	jsonpath = 'json/'
 	fnlist = ['setup.json',]
 	for fn in fnlist:
-		setup = json.load(file(fn))
+		setup = json.load(file(jsonpath + fn))
 		model_flag = setup['model_flag']
 		stand_flag = setup['stand_flag']
 		model_M = setup['method']
@@ -263,7 +264,7 @@ if __name__ == '__main__':
 		y_p = [b for [a, b] in Model.predict_proba(X_selected_test)]
 		y_ = my_binarizer(y_p, logstic_threshold)
 		y = y_test
-		#print y, y_p
+		#print y, y_
 		#term 2-1 ==================================================
 		
 		#term 3 ==================================================
