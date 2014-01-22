@@ -20,24 +20,17 @@
 			"1" : 
 				{"column_to_use_fn" : "config/f_1_af", 
 				"data_file" : "data/wt_sample1.out", 
-				"data_file_test" : "data/wt_sample1.out",
+				"data_file_test" : ["data/wt_sample1.out"],
 				"discret_list" : [98,99,100,101,102,103], 
 				"binar_list" : [], 
 				"binar_thr_list" : []
 				}, 
 			"2" : 
 				{"column_to_use_fn" : "config/f_2_af", 
-				"data_file" : "data/wt_sample_2_201201.txt", 
+				"data_file" : "data/wt_sample_2_201202.txt", 
 				"data_file_test" : 
 					[
-						"data/wt_sample_2_201202.txt", 
-						"data/wt_sample_2_201203.txt",
-						"data/wt_sample_2_201204.txt", 
-						"data/wt_sample_2_201205.txt",
-						"data/wt_sample_2_201206.txt", 
-						"data/wt_sample_2_201207.txt",
-						"data/wt_sample_2_201208.txt", 
-						"data/wt_sample_2_201209.txt"
+						"data/wt_sample_2_201203.txt"
 					],
 				"discret_list" : [4,5,6,7,8,9], 
 				"binar_list" : [], 
@@ -46,7 +39,7 @@
 			"3" : 
 				{"column_to_use_fn" : "config/f_3_af", 
 				"data_file" : "data/wt_sample3.out", 
-				"data_file_test" : "data/wt_sample3.out", 
+				"data_file_test" : ["data/wt_sample3.out"], 
 				"discret_list" : [76,77,78,79,80,81,82,83,84], 
 				"binar_list" : [], 
 				"binar_thr_list" : []
@@ -54,7 +47,7 @@
 			"4" : 
 				{"column_to_use_fn" : "config/f_4_af", 
 				"data_file" : "data/wt_sample4.out", 
-				"data_file_test" : "data/wt_sample4.out", 
+				"data_file_test" : ["data/wt_sample4.out"], 
 				"discret_list" : [6,7,8,9,10,11,12,13,14], 
 				"binar_list" : [], 
 				"binar_thr_list" : []

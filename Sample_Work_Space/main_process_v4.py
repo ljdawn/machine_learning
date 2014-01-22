@@ -155,12 +155,14 @@ def main_pandas(column_list_fn_ori, column_list_fn_new, column_to_use_fn, data_f
 	#timer(len(Label_selected_ALL))
 	return (X_selected, y, feature_selected_index)
 
-def main_pandas_for_test(data_file, feature_selected_index, column_list_fn_ori, column_list_fn_new, column_to_use_fn, stand_flag, discret_list, binar_list, binar_thr_list):
+def main_pandas_for_test(data_file, to_test, feature_selected_index, column_list_fn_ori, column_list_fn_new, column_to_use_fn, stand_flag, discret_list, binar_list, binar_thr_list):
 	#---process start---
 	column_label_ori = get_list(column_list_fn_ori)
 	column_label_new = get_list(column_list_fn_new)
 	column_num_new = column_get_label_num(column_label_ori, column_label_new)
-	data_matrix = get_table(data_file, column_label_ori)
+	data_matrix_tr = get_table(data_file, column_label_ori)
+	data_matrix_te = get_table(to_test, column_label_ori)
+	data_matrix = pd.concat([data_matrix_tr, data_matrix_te])
 	column_to_use_list = get_list(column_to_use_fn)
 	column_new_list = get_new_list(column_label_new, column_to_use_list)
 	data_matrix_m = data_matrix[column_label_new]
@@ -170,9 +172,9 @@ def main_pandas_for_test(data_file, feature_selected_index, column_list_fn_ori, 
 	#def column type
 	(X, process_summary) = preprocess(data_matrix_eff_float, stand_flag = stand_flag, discret_list = discret_list, binar_list = binar_list)
 	#<<step 3 -- get flag-- >>
-	y = np.array(map(float, get_One_col(data_file)))
+	y = np.array(map(float, get_One_col(to_test)))
 	#<<step 4 -- feature_selection -- >>
-	X_selected = column_picker(X, feature_selected_index)
+	X_selected = column_picker(X, feature_selected_index)[len(data_matrix_tr):]
 	return (X_selected, y)
 
 if __name__ == '__main__':
@@ -261,7 +263,7 @@ if __name__ == '__main__':
 		"""predicting"""
 		for da_t in data_file_test:
 			timer('<< -- predicting '+ da_t +' -- >>')
-			(X_selected_test, y_test) = main_pandas_for_test(data_file = da_t, feature_selected_index = F_selected, column_list_fn_ori = column_list_fn_ori, column_list_fn_new = column_list_fn_new, column_to_use_fn = column_to_use_fn,\
+			(X_selected_test, y_test) = main_pandas_for_test(data_file = data_file, to_test = da_t, feature_selected_index = F_selected, column_list_fn_ori = column_list_fn_ori, column_list_fn_new = column_list_fn_new, column_to_use_fn = column_to_use_fn,\
 				stand_flag = stand_flag, discret_list = discret_list, binar_list = binar_list, binar_thr_list = binar_thr_list)
 			y_ori = Model.predict(X_selected_test)
 			y_p = [b for [a, b] in Model.predict_proba(X_selected_test)]
