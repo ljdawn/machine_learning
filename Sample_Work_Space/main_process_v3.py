@@ -23,9 +23,11 @@ from tool_box import Step_One_Feature_Selection as SO
 from sklearn import linear_model
 import numpy as np
 import pandas as pd
+import statsmodels.api as sm
 import itertools
 import math
 from datetime import datetime
+from scipy import stats
 
 #---tool_box common functions---
 column_picker = SZ.column_picker
@@ -194,7 +196,15 @@ if __name__ == '__main__':
 	#---customize------------------------------------->>>>>>
 	#term 0 ==================================================
 	#mining
-	pre_data = get_table(data_file)
+	column_label_ori = get_list(column_list_fn_ori)
+	pre_data = get_table(data_file, column_label_ori)
+	tclo = np.array(pre_data['inpg_ays'] - pre_data['inpg_ays'].mean())
+	#tclo = tclo[np.where(tclo != -1)]
+	#t-test mean test (t-value, p-value, two_sided p < 0.05 -> mean -> 0)
+	res_sm = sm.stats.DescrStatsW(tclo).ztest_mean()
+	res_st = stats.ttest_1samp(tclo, 0.0)
+	print res_sm, res_st
+	#vat - test
 	#term 0 ==================================================
 	#term 1-1 ==================================================
 	#start_time = datetime.now()
