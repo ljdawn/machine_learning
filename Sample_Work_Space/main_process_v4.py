@@ -111,8 +111,8 @@ def main(column_list_fn_ori, column_list_fn_new, column_to_use_fn, data_file, di
 	Label_selected_ALL = [Label_ALL[x] for x in feature_selected_index]
 	timer(Label_selected_ALL) 
 	timer(len(Label_selected_ALL))
-	return (X_selected, y)
-def main_pandas(column_list_fn_ori, column_list_fn_new, column_to_use_fn, data_file, discret_list, binar_list, binar_thr_list, stand_flag = 0, p=0.05):
+	return (X_selected, y, Label_selected_ALL)
+def main_pandas(column_list_fn_ori, column_list_fn_new, column_to_use_fn, data_file, discret_list, binar_list, binar_thr_list, stand_flag = 0, p = 0.05):
 	#---process start---
 	column_label_ori = get_list(column_list_fn_ori)
 	column_label_new = get_list(column_list_fn_new)
@@ -153,8 +153,27 @@ def main_pandas(column_list_fn_ori, column_list_fn_new, column_to_use_fn, data_f
 	Label_selected_ALL = [Label_ALL[x] for x in feature_selected_index]
 	timer(Label_selected_ALL) 
 	timer(len(Label_selected_ALL))
-	return (X_selected, y)
+	return (X_selected, y, feature_selected_index)
 
+def main_pandas_for_test(data_file, feature_selected_index, column_list_fn_ori, column_list_fn_new, column_to_use_fn, stand_flag, discret_list, binar_list, binar_thr_list):
+	#---process start---
+	column_label_ori = get_list(column_list_fn_ori)
+	column_label_new = get_list(column_list_fn_new)
+	column_num_new = column_get_label_num(column_label_ori, column_label_new)
+	data_matrix = get_table(data_file, column_label_ori)
+	column_to_use_list = get_list(column_to_use_fn)
+	column_new_list = get_new_list(column_label_new, column_to_use_list)
+	data_matrix_m = data_matrix[column_label_new]
+	data_matrix_eff = data_matrix_m[column_new_list].values
+	data_matrix_eff_float = [map(lambda x:float(x) if not math.isnan(x) else 0, line) for line in data_matrix_eff.tolist()]
+	#<<step 2 -- preprossing data_matrix-- >>
+	#def column type
+	(X, process_summary) = preprocess(data_matrix_eff_float, stand_flag = stand_flag, discret_list = discret_list, binar_list = binar_list)
+	#<<step 3 -- get flag-- >>
+	y = np.array(map(float, get_One_col(data_file)))
+	#<<step 4 -- feature_selection -- >>
+	X_selected = column_picker(X, feature_selected_index)
+	return (X_selected, y)
 
 if __name__ == '__main__':
 	"""loop the set_up file"""
@@ -180,6 +199,7 @@ if __name__ == '__main__':
 		#---customize------------------------------------->>>>>>
 		column_to_use_fn = setup['model_detailed'][model_flag]['column_to_use_fn']
 		data_file = setup['model_detailed'][model_flag]['data_file']
+		data_file_test = setup['model_detailed'][model_flag]['data_file_test']
 		discret_list = setup['model_detailed'][model_flag]['discret_list']
 		binar_list = setup['model_detailed'][model_flag]['binar_list']
 		binar_thr_list = setup['model_detailed'][model_flag]['binar_thr_list']
@@ -217,8 +237,10 @@ if __name__ == '__main__':
 							4, feature selection -> to fit the model.
 							5, get the <y>s. -> to fit the format for machine learning(training part).
 							"""
-		(X_selected, y) = main_pandas(column_list_fn_ori = column_list_fn_ori, column_list_fn_new = column_list_fn_new, column_to_use_fn = column_to_use_fn, data_file = data_file, \
-			stand_flag = stand_flag, discret_list = discret_list, binar_list = binar_list, binar_thr_list = binar_thr_list, p=p)
+		(X_selected, y, F_selected) = main_pandas(column_list_fn_ori = column_list_fn_ori, column_list_fn_new = column_list_fn_new, column_to_use_fn = column_to_use_fn, data_file = data_file, \
+			stand_flag = stand_flag, discret_list = discret_list, binar_list = binar_list, binar_thr_list = binar_thr_list, p = p)
+		(X_selected_test, y_test) = main_pandas_for_test(data_file = data_file_test, feature_selected_index = F_selected, column_list_fn_ori = column_list_fn_ori, column_list_fn_new = column_list_fn_new, column_to_use_fn = column_to_use_fn,\
+			stand_flag = stand_flag, discret_list = discret_list, binar_list = binar_list, binar_thr_list = binar_thr_list)
 		#term 1-2 ==================================================
 	
 		#term 2-1 ==================================================
@@ -237,14 +259,14 @@ if __name__ == '__main__':
 		elif model_M == 'AdaBoost':
 			M = AdaBoostClassifier(n_estimators = len(y))
 		Model = M.fit(X_selected, y)
-		y_ori = Model.predict(X_selected)
-		y_p = [b for [a, b] in Model.predict_proba(X_selected)]
+		y_ori = Model.predict(X_selected_test)
+		y_p = [b for [a, b] in Model.predict_proba(X_selected_test)]
 		y_ = my_binarizer(y_p, logstic_threshold)
+		y = y_test
 		#print y, y_p
 		#term 2-1 ==================================================
 		
 		#term 3 ==================================================
-		timer('<< -- validation-- >>')
 		print '\nconfusion_matrix:','\n','-'*100
 		"""confusion_matrix"""
 		print my_report(y,y_)[0]
