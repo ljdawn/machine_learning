@@ -1,0 +1,56 @@
+{
+	"model_flag_desc" : "1 : chengdan_model_1; 2 : chengdan_model_2; 3 : chengfan_model 3; 4 : chengdan_model_4: 0 : for model test",
+	"model_flag" : "0",
+	"stand_flag_desc" : "0 : non-standardization --> range(0,1); 1 : standardize full matrix in last stage; 2 : standardize no-change columns",
+	"stand_flag" : 0,
+	"method_desc" : "'SVM', 'logstic', 'GaussianNB', 'DecisionTree', 'RandomForest', 'AdaBoost'", 
+	"method" : "logstic",
+	"column_list_fn_ori" : "config/head_ori",
+	"column_list_fn_new" : "config/head_new",
+	"tol" : 1e-4,
+	"penalty" : "l1",
+	"C" : 1,
+	"logstic_threshold" : 0.5,
+	"CV_score" : "disable",
+	"cv_fold" : 3,
+	"ROC_plot" : "disable",
+	"P" : 0.05,
+	"model_detailed" : 
+		{
+			"1" : 
+				{"column_to_use_fn" : "config/f_1_af", 
+				"data_file" : "data/wt_sample1.out", 
+				"discret_list" : [98,99,100,101,102,103], 
+				"binar_list" : [], 
+				"binar_thr_list" : []
+				}, 
+			"2" : 
+				{"column_to_use_fn" : "config/f_1_af", 
+				"data_file" : "data/wt_sample1.out", 
+				"discret_list" : [98,99,100,101,102,103], 
+				"binar_list" : [], 
+				"binar_thr_list" : []
+				}, 
+			"3" : 
+				{"column_to_use_fn" : "config/f_2_af", 
+				"data_file" : "data/wt_sample2.out", 
+				"discret_list" : [4,5,6,7,8,9], 
+				"binar_list" : [], 
+				"binar_thr_list" : []
+				}, 
+			"4" : 
+				{"column_to_use_fn" : "config/f_3_af", 
+				"data_file" : "data/wt_sample3.out", 
+				"discret_list" : [76,77,78,79,80,81,82,83,84], 
+				"binar_list" : [], 
+				"binar_thr_list" : []
+				}, 		
+			"0" : 
+				{"column_to_use_fn" : "config/works", 
+				"data_file" : "data/test", 
+				"discret_list" : [], 
+				"binar_list" : [], 
+				"binar_thr_list" : []
+				} 
+		}
+}
