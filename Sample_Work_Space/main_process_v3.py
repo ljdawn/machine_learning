@@ -162,7 +162,12 @@ if __name__ == '__main__':
 	penalty = 'l1'
 	C = 1
 	p = 0.05
-	logstic_threshold = 0.2	
+	logstic_threshold = 0.2
+	cv_fold	= 3
+	#function switch
+	ROC_plot = 0
+	CV_score = 1
+
 	#---customize------------------------------------->>>>>>
 	if model_flag == 1:
 		column_to_use_fn = 'config/f_1_af'
@@ -249,17 +254,18 @@ if __name__ == '__main__':
 	"""confusion_matrix"""
 	print my_report(y,y_)[0]
 	"""plot ROC curve only in windows"""
-	#import pylab as pl
-	#pl.clf()
-	#pl.plot(my_PRC(y,y_)[0], my_PRC(y,y_)[1], label='ROC curve (area = %0.2f)' % my_PRC(y,y_)[3])
-	#pl.plot([0, 1], [0, 1], 'k--')
-	#pl.xlim([0.0, 1.0])
-	#pl.ylim([0.0, 1.0])
-	#pl.xlabel('False Positive Rate')
-	#pl.ylabel('True Positive Rate')
-	#pl.title('Receiver operating characteristic example')
-	#pl.legend(loc="lower right")
-	#pl.show()
+	if ROC_plot == 1:
+		import pylab as pl
+		pl.clf()
+		pl.plot(my_PRC(y,y_)[0], my_PRC(y,y_)[1], label='ROC curve (area = %0.2f)' % my_PRC(y,y_)[3])
+		pl.plot([0, 1], [0, 1], 'k--')
+		pl.xlim([0.0, 1.0])
+		pl.ylim([0.0, 1.0])
+		pl.xlabel('False Positive Rate')
+		pl.ylabel('True Positive Rate')
+		pl.title('Receiver operating characteristic example')
+		pl.legend(loc="lower right")
+		pl.show()
 	#term 3 ==================================================
 
 	#term 4 ==================================================
@@ -269,9 +275,15 @@ if __name__ == '__main__':
 	print '\nROC curve area:','\n','-'*100
 	"""ROC curve"""
 	print my_PRC(map(int, y.tolist()), y_p)[3]
-	end_time =  datetime.now()
-	print 'time_cost:', str(end_time - start_time)
-	print 'current Model:', model_flag
+
 	#term 4 ==================================================
 
 	#term 5 ==================================================
+	if CV_score == 1:
+		print '\nCV_score :','\n','-'*100
+		func = LLM
+		print my_CV(X_selected, y, func, cv_fold)
+	#term 5 ==================================================
+	end_time =  datetime.now()
+	print 'time_cost:', str(end_time - start_time)
+	print 'current Model:', model_flag
