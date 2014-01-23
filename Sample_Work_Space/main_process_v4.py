@@ -126,6 +126,8 @@ def main_pandas(column_list_fn_ori, column_list_fn_new, column_to_use_fn, data_f
 	#<<step 2 -- preprossing data_matrix-- >>
 	#def column type
 	(X, process_summary) = preprocess(data_matrix_eff_float, stand_flag = stand_flag, discret_list = discret_list, binar_list = binar_list)
+	training_data_width = len(X[0])
+	#print 'train_data_width', training_data_width
 	nochange_ = process_summary['no change column']
 	discret_ = process_summary['discret column']
 	binarized_ = process_summary['binarized column']
@@ -153,9 +155,9 @@ def main_pandas(column_list_fn_ori, column_list_fn_new, column_to_use_fn, data_f
 	Label_selected_ALL = [Label_ALL[x] for x in feature_selected_index]
 	#timer(Label_selected_ALL) 
 	#timer(len(Label_selected_ALL))
-	return (X_selected, y, feature_selected_index)
+	return (X_selected, y, feature_selected_index, training_data_width)
 
-def main_pandas_for_test(data_file, to_test, feature_selected_index, column_list_fn_ori, column_list_fn_new, column_to_use_fn, stand_flag, discret_list, binar_list, binar_thr_list):
+def main_pandas_for_test(data_file, to_test, train_data_width, feature_selected_index, column_list_fn_ori, column_list_fn_new, column_to_use_fn, stand_flag, discret_list, binar_list, binar_thr_list):
 	#---process start---
 	column_label_ori = get_list(column_list_fn_ori)
 	column_label_new = get_list(column_list_fn_new)
@@ -170,11 +172,14 @@ def main_pandas_for_test(data_file, to_test, feature_selected_index, column_list
 	data_matrix_eff_float = [map(lambda x:float(x) if not math.isnan(x) else 0, line) for line in data_matrix_eff.tolist()]
 	#<<step 2 -- preprossing data_matrix-- >>
 	#def column type
-	(X, process_summary) = preprocess(data_matrix_eff_float, stand_flag = stand_flag, discret_list = discret_list, binar_list = binar_list)
+	(X, process_summary) = preprocess(data_matrix_eff_float, data_matrix_test = data_matrix_te, test_flag = True, stand_flag = stand_flag, discret_list = discret_list, binar_list = binar_list)
+	test_data_width = len(X[0])
+	print '!', 'test_data_width', test_data_width,'<-->' ,'training_data_width', training_data_width, 'important!!'
+	assert training_data_width == test_data_width
 	#<<step 3 -- get flag-- >>
 	y = np.array(map(float, get_One_col(to_test)))
 	#<<step 4 -- feature_selection -- >>
-	X_selected = column_picker(X, feature_selected_index)[len(data_matrix_tr):]
+	X_selected = column_picker(X, feature_selected_index)
 	return (X_selected, y)
 
 if __name__ == '__main__':
@@ -240,7 +245,7 @@ if __name__ == '__main__':
 							4, feature selection -> to fit the model.
 							5, get the <y>s. -> to fit the format for machine learning(training part).
 							"""
-		(X_selected, y, F_selected) = main_pandas(column_list_fn_ori = column_list_fn_ori, column_list_fn_new = column_list_fn_new, column_to_use_fn = column_to_use_fn, data_file = data_file, \
+		(X_selected, y, F_selected, training_data_width) = main_pandas(column_list_fn_ori = column_list_fn_ori, column_list_fn_new = column_list_fn_new, column_to_use_fn = column_to_use_fn, data_file = data_file, \
 			stand_flag = stand_flag, discret_list = discret_list, binar_list = binar_list, binar_thr_list = binar_thr_list, p = p)
 		#term 1-2 ==================================================
 	
@@ -260,11 +265,12 @@ if __name__ == '__main__':
 		elif model_M == 'AdaBoost':
 			M = AdaBoostClassifier(n_estimators = len(y))
 		Model = M.fit(X_selected, y)
+
 		"""predicting"""
 		for da_t in data_file_test:
 			timer('<< -- predicting '+ da_t +' -- >>')
 			(X_selected_test, y_test) = main_pandas_for_test(data_file = data_file, to_test = da_t, feature_selected_index = F_selected, column_list_fn_ori = column_list_fn_ori, column_list_fn_new = column_list_fn_new, column_to_use_fn = column_to_use_fn,\
-				stand_flag = stand_flag, discret_list = discret_list, binar_list = binar_list, binar_thr_list = binar_thr_list)
+				stand_flag = stand_flag, discret_list = discret_list, binar_list = binar_list, binar_thr_list = binar_thr_list, train_data_width = training_data_width)
 			y_ori = Model.predict(X_selected_test)
 			y_p = [b for [a, b] in Model.predict_proba(X_selected_test)]
 			y_ = my_binarizer(y_p, logstic_threshold)

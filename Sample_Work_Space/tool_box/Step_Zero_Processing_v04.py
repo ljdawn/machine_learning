@@ -2,6 +2,8 @@
 ====================
 data processing 
 working with numpy, pandas, scikit-learn
+*stand -1 test can noi be use
+*test data(after data preprocessing) columns must = training data(after datap rocessing)
 ====================
 
 """
@@ -85,14 +87,20 @@ def preprocess(data_matrix, data_matrix_test = '', stand_flag = 0, test_flag = F
 		discret_adjust = target_discret.min()
 		enc.fit(target_discret - discret_adjust)
 		target_discret_final = enc.transform(target_discret - discret_adjust).toarray()
-		box.append(target_discret_final)
+		if test_flag == False:
+			box.append(target_discret_final)
+		else:
+			box.append(target_discret_final[t_l:])	
 	if len(binar_list) != 0:
 		target_binarizer = target.T[target_filter == 2]
 		if binar_thr_list == []:
 			binar_thr_list = [x.mean() for x in target_binarizer]
 		target_binarizer_final = np.vstack(map(lambda l:preprocessing.Binarizer(threshold = binar_thr_list[l]).transform(target_binarizer[l]), range(len(binar_list)))).T
 		target_binarizer_final_count = target_binarizer_final.shape[1]
-		box.append(target_binarizer_final)
+		if test_flag == False:
+			box.append(target_binarizer_final)
+		else:
+			box.append(target_binarizer_final[t_l:])
 	if stand_flag != 2:
 		if test_flag == False:
 			target_other = min_max_scaler.fit_transform(target.T[target_filter == 0].T)
@@ -110,7 +118,8 @@ def preprocess(data_matrix, data_matrix_test = '', stand_flag = 0, test_flag = F
 			if test_flag == False:
 				res = preprocessing.StandardScaler().fit(target_step_1).transform(target_step_1) 
 			else:
-				res = preprocessing.StandardScaler().fit(target_step_1[0:t_l]).transform(target_step_1[tl:])
+				scaler = preprocessing.StandardScaler().fit(target_step_1[0:t_l])
+				res = scaler.transform(target_step_1[t_l:])
 	else:
 		if test_flag == False:
 			target_other = preprocessing.scale(target.T[target_filter == 0].T)
@@ -121,8 +130,6 @@ def preprocess(data_matrix, data_matrix_test = '', stand_flag = 0, test_flag = F
 			res = np.hstack(box[::-1]) 
 		else:
 			res = target_other
-
-
 	preprocessing_summary = {'categorize_class':categorize_class, \
 	'no change column':(0, target_other.shape[1]), \
 		'binarized column':(target_other.shape[1], target_other.shape[1]+target_binarizer_final_count), \
@@ -182,11 +189,15 @@ if __name__ == '__main__':
 
 	#4--
 	table = [[1.3,2,3,1,6],[0.0,5,7,2,7],[1.0,-100,20,3,7]]
+	table_test = [[3,3,3,3,3], [4,4,4,4,4]]
 	#for item in table:
 	#	print item
 	table_ =  np.array(table)
+	table_test_ = np.array(table_test)
 	data = {'a':table_[:,0], 'b':table_[:,1], 'c':table_[:,2], 'd':table_[:,3], 'e':table_[:,4]}
+	data_test = {'a':table_test_[:,0], 'b':table_test_[:,1], 'c':table_test_[:,2], 'd':table_test_[:,3], 'e':table_test_[:,4]}
 	table_frame = pd.DataFrame(data)
+	table_frame_test = pd.DataFrame(data_test)
 	#print preprocess(table, discret_list = [3, 4], binar_list = [1, 2], binar_thr_list = [0, 10])
 	#print preprocess(table, discret_list = [3, 4], binar_list = [1, 2])
 	#print preprocess(table, stand_flag = 2, discret_list = [3, 4], binar_list = [1, 2])
@@ -204,5 +215,12 @@ if __name__ == '__main__':
 	#new = ['b', 'e', 'd', 'a', 'c']
 	#print column_get_label_num(ori, new)
 	#8 pandas
-	print column_picker_pandas(table_frame, ['a','c'])
-	print column_picker(table, column_get_label_num(['a', 'b', 'c', 'd', 'e'], ['a', 'c']))
+	#print column_picker_pandas(table_frame, ['a','c'])
+	#print column_picker(table, column_get_label_num(['a', 'b', 'c', 'd', 'e'], ['a', 'c']))
+	#9 preprocess for test
+	print table_frame
+	print table_frame_test
+	print preprocess(table_frame, stand_flag = 0, discret_list = [3, 4])[0].tolist()
+	#print preprocess(table_frame_test, stand_flag = 0, discret_list = [3, 4],  binar_thr_list = [0, 10])[0].tolist()
+	data_matrix = pd.concat([table_frame, table_frame_test])
+	print preprocess(data_matrix, table_frame_test, test_flag = True, stand_flag = 0, discret_list = [3, 4])[0].tolist()
