@@ -51,7 +51,7 @@ def my_binarizer(*args):
 	binarizer = preprocessing.Binarizer(threshold)
 	return binarizer.transform(np.array(args[0]))
 
-def preprocess(data_matrix, stand_flag = 0, test_flag = False, discret_list = [], binar_list = [], binar_thr_list = []):
+def preprocess(data_matrix, data_matrix_test = '', stand_flag = 0, test_flag = False, discret_list = [], binar_list = [], binar_thr_list = []):
 	"""data_matrix : two-dimensional array; feature matrix.
 		stand_flag : standardization flag; 0->non-standardization-->range(0,1); 1->standardize full matrix in last stage; 2 ->standardize no-change columns; 
 					*0 -> range(0, 1), 0/1;range(0,1), 0/1
@@ -72,6 +72,7 @@ def preprocess(data_matrix, stand_flag = 0, test_flag = False, discret_list = []
 	target_binarizer_final_count = 0
 	categorize_class = np.array([])
 	target_filter = np.zeros(n)
+	t_l = len(data_matrix) - len(data_matrix_test)
 	#class 1 : categorize, 2 : binarize
 	for num in discret_list:
 		target_filter[num] = 1
@@ -92,27 +93,34 @@ def preprocess(data_matrix, stand_flag = 0, test_flag = False, discret_list = []
 		target_binarizer_final = np.vstack(map(lambda l:preprocessing.Binarizer(threshold = binar_thr_list[l]).transform(target_binarizer[l]), range(len(binar_list)))).T
 		target_binarizer_final_count = target_binarizer_final.shape[1]
 		box.append(target_binarizer_final)
-	if test_flag == False:
-		if stand_flag != 2:
+	if stand_flag != 2:
+		if test_flag == False:
 			target_other = min_max_scaler.fit_transform(target.T[target_filter == 0].T)
-			box.append(target_other)
-			if len(box) != 1:
-				target_step_1 = np.hstack(box[::-1]) 
-			else:
-				target_step_1 = target_other
-			if stand_flag == 0:
-				res = target_step_1 
-			elif stand_flag == 1: 
-				res = preprocessing.scale(target_step_1)
 		else:
-			target_other = preprocessing.scale(target.T[target_filter == 0].T) 
-			box.append(min_max_scaler.fit_transform(target_other))
-			if len(box) != 1:
-				res = np.hstack(box[::-1]) 
+			target_other = min_max_scaler.fit_transform(target.T[target_filter == 0].T[0:t_l])
+			target_other = min_max_scaler.transform(target.T[target_filter == 0].T[t_l:])
+		box.append(target_other)
+		if len(box) != 1:
+			target_step_1 = np.hstack(box[::-1]) 
+		else:
+			target_step_1 = target_other
+		if stand_flag == 0:
+			res = target_step_1 
+		elif stand_flag == 1:
+			if test_flag == False:
+				res = preprocessing.StandardScaler().fit(target_step_1).transform(target_step_1) 
 			else:
-				res = target_other
-	elif test_flag == True:
-		pass
+				res = preprocessing.StandardScaler().fit(target_step_1[]0:t_l).transform(target_step_1[tl:])
+	else:
+		if test_flag == False:
+			target_other = preprocessing.scale(target.T[target_filter == 0].T)
+		else:
+			target_other = preprocessing.StandardScaler().fit(target.T[target_filter == 0].T[0:t_l]).transform(target.T[target_filter == 0].T[t_l:])
+		box.append(min_max_scaler.fit_transform(target_other))
+		if len(box) != 1:
+			res = np.hstack(box[::-1]) 
+		else:
+			res = target_other
 
 
 	preprocessing_summary = {'categorize_class':categorize_class, \
