@@ -85,14 +85,20 @@ def preprocess(data_matrix, data_matrix_test = '', stand_flag = 0, test_flag = F
 		discret_adjust = target_discret.min()
 		enc.fit(target_discret - discret_adjust)
 		target_discret_final = enc.transform(target_discret - discret_adjust).toarray()
-		box.append(target_discret_final)
+		if test_flag == False:
+			box.append(target_discret_final)
+		else:
+			box.append(target_discret_final[t_l:])	
 	if len(binar_list) != 0:
 		target_binarizer = target.T[target_filter == 2]
 		if binar_thr_list == []:
 			binar_thr_list = [x.mean() for x in target_binarizer]
 		target_binarizer_final = np.vstack(map(lambda l:preprocessing.Binarizer(threshold = binar_thr_list[l]).transform(target_binarizer[l]), range(len(binar_list)))).T
 		target_binarizer_final_count = target_binarizer_final.shape[1]
-		box.append(target_binarizer_final)
+		if test_flag == False:
+			box.append(target_binarizer_final)
+		else:
+			bo.append(target_binarizer_final[t_l:])
 	if stand_flag != 2:
 		if test_flag == False:
 			target_other = min_max_scaler.fit_transform(target.T[target_filter == 0].T)
@@ -121,8 +127,6 @@ def preprocess(data_matrix, data_matrix_test = '', stand_flag = 0, test_flag = F
 			res = np.hstack(box[::-1]) 
 		else:
 			res = target_other
-
-
 	preprocessing_summary = {'categorize_class':categorize_class, \
 	'no change column':(0, target_other.shape[1]), \
 		'binarized column':(target_other.shape[1], target_other.shape[1]+target_binarizer_final_count), \
