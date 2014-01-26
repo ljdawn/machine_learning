@@ -5,14 +5,13 @@ working with numpy, pandas, scikit-learn, statsmodels, scipy
 *standardization : z-score 
 *feature_selection : Chi-squared
 *mehtod : SVM, logstic, GaussianNB, DecisionTree, RandomForest, AdaBoost
-**cost sensitive learning added (sample weights)
 **main_pandas is 3times faster
 ====================
 
 """
 __author__ = """\n""".join(['Xuan Zhang'])
 
-__version__ ="""2013-01-26"""
+__version__ ="""2013-01-22"""
 
 __all__ = ['']
 
@@ -157,10 +156,6 @@ if __name__ == '__main__':
 		penalty = setup['penalty']
 		C = setup['C']
 		p = setup['P']
-		class_weight_ = setup['Class_weight']
-		class_weight = {}
-		for key in class_weight_:
-			class_weight[int(key)] = class_weight_[key]
 		logstic_threshold = setup['logstic_threshold']
 		cv_fold	= setup['cv_fold']
 		#function switch
@@ -215,9 +210,9 @@ if __name__ == '__main__':
 		timer('<< -- training '+ model_M +' -- >>')
 		"""training model: 1, y_ -> predicted values 2, -> predicted values in probility"""
 		if model_M == 'logstic':
-			M = linear_model.LogisticRegression(tol = tol, penalty = penalty, C = C, class_weight = class_weight)
+			M = linear_model.LogisticRegression(tol = tol, penalty = penalty, C = C)
 		elif model_M == 'SVM':
-			M = svm.SVC(C = C, tol = tol, kernel='linear', probability = True, class_weight = class_weight)
+			M = svm.SVC(C = C, tol = tol, kernel='linear', probability = True)
 		elif model_M == 'GaussianNB':
 			M = GaussianNB()
 		elif model_M == 'DecisionTree':
