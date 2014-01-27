@@ -252,9 +252,6 @@ if __name__ == '__main__':
 		print 'summary report:'
 		"""detailed report"""
 		print my_report(y,y_)[1]
-		#print '\nROC curve area:','\n','-'*100
-		#"""ROC curve"""
-		#print my_PRC(map(int, y.tolist()), y_p)[3]
 		#term 4 ==================================================
 	
 		#term 5 ==================================================
@@ -263,6 +260,22 @@ if __name__ == '__main__':
 			func = M
 			print my_CV(X_selected, y, func, cv_fold)
 		#term 5 ==================================================
+
+		#term 6 ==================================================
+		from sklearn.metrics import hinge_loss
+		print 'average hinge loss :', hinge_loss(y, y_)
+		from sklearn.metrics import matthews_corrcoef
+		print 'matthews_corrcoef :', matthews_corrcoef(y, y_)
+		#from sklearn.metrics import precision_recall_curve
+		#print 'precision-recall pairs :',  precision_recall_curve(y, y_p)
+		from sklearn.metrics import hamming_loss
+		print 'hamming loss :', hamming_loss(y, y_)
+		from sklearn.metrics import jaccard_similarity_score
+		print 'Jaccard similarity coefficient :', jaccard_similarity_score(y, y_)
+		from sklearn.metrics import roc_auc_score, roc_curve
+		print 'roc auc score :', roc_auc_score(y, y_)
+		#, roc_curve(y, y_)
+		#term 6 ==================================================
 		end_time =  datetime.now()
 		print 'time_cost:', str(end_time - start_time)
 		print 'current Model:', model_flag, '\n', 'current Classifier:', model_M, '\n','-'*100, '\n'
