@@ -11,6 +11,8 @@
 	"penalty" : "l1",
 	"C" : 1,
 	"Class_weight" :{"0" : 1.0, "1" : 10},
+	"grid_search_flag" : "disable",
+	"grid_search_parameter" : {"penalty":["l1", "l2"],"C":[1, 10, 100]},
 	"logstic_threshold" : 0.1,
 	"CV_score" : "disable",
 	"cv_fold" : 3,

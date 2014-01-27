@@ -6,14 +6,13 @@ working with numpy, pandas, scikit-learn, statsmodels, scipy
 *feature_selection : Chi-squared
 *mehtod : SVM, logstic, GaussianNB, DecisionTree, RandomForest, AdaBoost
 **cost sensitive learning added (sample weights)
-**grid searching for (L1, L2, C)  added
 **main_pandas is 3times faster
 ====================
 
 """
 __author__ = """\n""".join(['Xuan Zhang'])
 
-__version__ ="""2013-01-27"""
+__version__ ="""2013-01-26"""
 
 __all__ = ['']
 
@@ -27,7 +26,6 @@ from tool_box import Step_One_Feature_Selection as SO
 from sklearn import linear_model, svm, tree
 from sklearn.naive_bayes import GaussianNB
 from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
-from sklearn import grid_search
 import numpy as np
 import pandas as pd
 import statsmodels.api as sm
@@ -156,15 +154,13 @@ if __name__ == '__main__':
 		column_list_fn_new = setup['column_list_fn_new']
 		#---model setup---
 		tol =  setup['tol']
+		penalty = setup['penalty']
+		C = setup['C']
 		p = setup['P']
 		class_weight_ = setup['Class_weight']
 		class_weight = {}
 		for key in class_weight_:
 			class_weight[int(key)] = class_weight_[key]
-		penalty = setup['penalty']
-		C = setup['C']
-		grid_search_flag = setup['grid_search_flag']
-		grid_search_parameter = setup['grid_search_parameter']
 		logstic_threshold = setup['logstic_threshold']
 		cv_fold	= setup['cv_fold']
 		#function switch
@@ -179,8 +175,32 @@ if __name__ == '__main__':
 		binar_thr_list = setup['model_detailed'][model_flag]['binar_thr_list']
 		#---customize------------------------------------->>>>>>
 		start_time = datetime.now()
+		#term 0 ==================================================
+		#mining
+		#column_label_ori = get_list(column_list_fn_ori)
+		#pre_data = get_table(data_file, column_label_ori)
+		#tclo = np.array(pre_data['inpg_ays'] - pre_data['inpg_ays'].mean())
+		#tclo = tclo[np.where(tclo != -1)]
+		#t-test mean test (t-value, p-value, two_sided p < 0.05 -> mean -> 0)
+		#res_sm = sm.stats.DescrStatsW(tclo).ztest_mean()
+		#res_st = stats.ttest_1samp(tclo, 0.0)
+		#print res_sm, res_st
+		#vat - test
+		#term 0 ==================================================
 	
-		#term 1 ==================================================
+		#term 1-1 ==================================================
+		"""data processing : 1, origin data column (order) rearragement(optional) -> to fit the format. <continuous>:<binary>:<discrest box> 
+		                2, column picking(optional) -> to fit the model.
+						3, processing data -> to fit the format for machine learning(training part).
+						4, feature selection -> to fit the model.
+						5, get the <y>s. -> to fit the format for machine learning(training part).
+						"""
+		#(X_selected, y) = main(column_list_fn_ori = column_list_fn_ori, column_list_fn_new = column_list_fn_new, column_to_use_fn = column_to_use_fn, data_file = data_file, \
+		#	stand_flag = stand_flag, discret_list = discret_list, binar_list = binar_list, binar_thr_list = binar_thr_list, p=p)
+		#print (X_selected, y)
+		#term 1-1 ==================================================
+	
+		#term 1-2 ==================================================
 		"""data processing : 1, origin data column (order) rearragement(optional) -> to fit the format. <continuous>:<binary>:<discrest box> 
 			                2, column picking(optional) -> to fit the model.
 							3, processing data -> to fit the format for machine learning(training part).
@@ -189,19 +209,13 @@ if __name__ == '__main__':
 							"""
 		(X_selected, y, F_selected, training_data_width) = main_pandas(column_list_fn_ori = column_list_fn_ori, column_list_fn_new = column_list_fn_new, column_to_use_fn = column_to_use_fn, data_file = data_file, \
 			to_test = data_file_test, stand_flag = stand_flag, discret_list = discret_list, binar_list = binar_list, binar_thr_list = binar_thr_list, p = p)
-		#term 1 ==================================================
+		#term 1-2 ==================================================
 	
 		#term 2 ==================================================
 		timer('<< -- training '+ model_M +' -- >>')
-		"""model fitting : 1, y_ -> predicted values 2, -> predicted values in probility"""
+		"""training model: 1, y_ -> predicted values 2, -> predicted values in probility"""
 		if model_M == 'logstic':
 			M = linear_model.LogisticRegression(tol = tol, penalty = penalty, C = C, class_weight = class_weight)
-			if grid_search_flag == 'enable':
-				clf = grid_search.GridSearchCV(M, grid_search_parameter)
-				clf.fit(X_selected, y)
-				parameter = clf.best_params_
-				print clf.best_estimator_
-				M = linear_model.LogisticRegression(tol = tol, penalty = parameter['penalty'], C = parameter['C'], class_weight = class_weight)
 		elif model_M == 'SVM':
 			M = svm.SVC(C = C, tol = tol, kernel='linear', probability = True, class_weight = class_weight)
 		elif model_M == 'GaussianNB':
@@ -212,8 +226,6 @@ if __name__ == '__main__':
 			M = RandomForestClassifier(n_estimators = len(y))
 		elif model_M == 'AdaBoost':
 			M = AdaBoostClassifier(n_estimators = len(y))
-
-		#model fitting
 		Model = M.fit(X_selected, y)
 
 		"""predicting"""
