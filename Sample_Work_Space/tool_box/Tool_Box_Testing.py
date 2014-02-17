@@ -21,8 +21,9 @@ class test_Zero_v06(unittest.TestCase):
 		"""a real data like data matrix, every element in the matrix must be int/float"""
 		self.table = [[1.3,2,3,1,6],[0.0,5,7,2,7],[1.0,-100,20,3,7]]
 		self.preprocess = Step_Zero_Processing_v06.preprocess_one
+		self.column_picker = Step_Zero_Processing_v06.column_picker
 	def test_preprocess_one(self):
-		print 'Step_Zero_Processing_v06.preprocess_one() test starting ... '
+		print '\nStep_Zero_Processing_v06.preprocess_one() test starting ... '
 		print 'Test 1 --> stand model : 0, discret_list = [], binar_list = [], binar_thr_list = []'
 		#print 'Expecting : '
 		#print min_max_scaler.fit_transform(self.table)
@@ -48,7 +49,6 @@ class test_Zero_v06(unittest.TestCase):
 		self.assertAlmostEqual((Exp - self.preprocess(self.table, 2)[0]).sum(), 0)
 		print 'Test 9 --> stand model : 2, discret_list = [], binar_list = [3, 4], binar_thr_list = [], test manually'
 		print 'Test 10 --> stand model : 2, discret_list = [], binar_list = [3, 4], binar_thr_list = [1, 2], test manually'
-
 	def test_preprocess_one_exception(self):
 		print '\nStep_Zero_Processing_v06.preprocess_one() Exception test starting ... '
 		print 'Test 1 --> stand model : 0, discret_list = ["s"], binar_list = ["s"], binar_thr_list = ["s"]' 
@@ -66,6 +66,34 @@ class test_Zero_v06(unittest.TestCase):
 		self.assertRaises(AssertionError, self.preprocess, self.table, 0, [-1], [], [])
 		self.assertRaises(AssertionError, self.preprocess, self.table, 0, [], [-1], [])
 
+	def test_column_picker(self):
+		print '\nStep_Zero_Processing_v06.column_picker() test starting ... '
+		print 'Test 1 --> self.table, column_to_pick = [1, 2]'
+		Exp = [[2, 3],[5, 7],[-100, 20]]
+		funcR = self.column_picker(self.table, [1, 2])
+		self.assertAlmostEqual((np.array(Exp)-funcR).sum(), 0)
+		print 'Test 2 --> self.table, column_to_pick = [1, 3]'
+		Exp = [[2, 1],[5, 2],[-100, 3]]
+		funcR = self.column_picker(self.table, [1, 3])
+		self.assertAlmostEqual((np.array(Exp)-funcR).sum(), 0)
+		print 'Test 3 --> self.table, column_to_pick = [0]'
+		Exp = [[1.3],[0.0],[1.0]]
+		funcR = self.column_picker(self.table, [0])
+		self.assertAlmostEqual((np.array(Exp)-funcR).sum(), 0)
+		print 'Test 4 --> self.table, column_to_pick = [-1]'
+		Exp = [[6],[7],[7]]
+		funcR = self.column_picker(self.table, [4])
+		self.assertAlmostEqual((np.array(Exp)-funcR).sum(), 0)
+	def test_column_picker_exception(self):
+		print '\nStep_Zero_Processing_v06.test_column_picker_exception() test starting ... '
+		print 'Test 1 --> self.table, column_to_pick = [7]'
+		self.assertRaises(AssertionError, self.column_picker, self.table, [7])
+		print 'Test 2 --> self.table, column_to_pick = [-7]'
+		self.assertRaises(AssertionError, self.column_picker, self.table, [-7])
+		print 'Test 3 --> self.table, column_to_pick = []/None/string'
+		self.assertRaises(ValueError, self.column_picker, self.table, [])
+		self.assertRaises(AssertionError, self.column_picker, self.table, [None])
+		self.assertRaises(AssertionError, self.column_picker, self.table, ["s"])
 
 if __name__ == '__main__':
 	unittest.main()

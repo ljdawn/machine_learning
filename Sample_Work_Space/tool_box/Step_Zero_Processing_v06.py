@@ -186,11 +186,12 @@ def preprocess(data_matrix, data_matrix_test = '', stand_flag = 0, test_flag = F
 		'standardization':stand_flag}
 	return (res, preprocessing_summary)
 
-def column_picker(data_matrix, column_to_pick = []):
+def column_picker(data_matrix, column_to_pick):
 	"""to pick columns by ids"""
 	import numpy as np
 	target = np.array(data_matrix)
 	assert max(column_to_pick) < target.shape[1]
+	assert np.array(column_to_pick).min() >= 0
 	target_step_1 = filter(lambda (x,y):x in column_to_pick, enumerate(target.T))
 	return np.vstack([x[1].T for x in target_step_1]).T
 
