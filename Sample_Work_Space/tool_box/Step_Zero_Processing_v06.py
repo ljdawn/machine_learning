@@ -2,8 +2,6 @@
 ====================
 data processing 
 working with numpy, pandas, scikit-learn
-*stand -1 test can not be use
-*test data(after data preprocessing) columns must = training data(after datap rocessing)
 ====================
 
 """
@@ -17,14 +15,40 @@ __all__ = ['']
 from operator import *
 
 def preprocess_one(data_matrix, stand_flag = 0, discret_list = [], binar_list = [], binar_thr_list =[]):
-	"""discret_list, binar_list, binar_thr_list, must be list of init/float"""
+	"""data_matrix : two-dimensional array; feature matrix.
+		stand_flag : standardization flag; 0->non-standardization-->range(0,1); 1->standardize full matrix in last stage; 2 ->standardize no-change columns; 
+					*0 -> range(0, 1), 0/1|range(0, 1), 0/1-class|rang(0, 1)
+					*1 -> mean --> 0 var --> 1
+					*2 -> mean --> 0 var --> 1, 0/1|range(0,1), 0/1-class|range(0, 1)
+		discret_list : the column to discretize; list of column_num; like [1,2,3,4] 
+		binar_list : the column to binarize; list of column_num; like [1,2,3,4]
+		binar_thr_list : threshold to be binarized *defult -> mean of column 
+	"""
 	import numpy as np
+	#<<Test>>Input exception test
+	assert np.array(data_matrix).sum()
+	to_process = np.array(data_matrix)
+	(m, n) = to_process.shape#m -> rows, n -> cols
+	assert stand_flag in (0, 1, 2)
+	if discret_list != []:
+		ndl = np.array(discret_list)
+		assert ndl.sum()
+		assert ndl.max() < n
+		assert ndl.min() >= 0
+	if binar_list != []:
+		nbl = np.array(binar_list)
+		assert nbl.sum()
+		assert nbl.max() < n
+		assert nbl.min() >= 0
+	if discret_list != [] and binar_list != []:
+		assert discret_list not in binar_list
+	if binar_thr_list != []:
+		assert np.array(binar_thr_list).sum()
+		assert len(binar_thr_list) == len(binar_list)
 	from sklearn import preprocessing
 	matrix_catalog_converter = preprocessing.OneHotEncoder()
 	min_max_scaler = preprocessing.MinMaxScaler()#[0, 1] by default
 	#init
-	to_process = np.array(data_matrix)
-	(m, n) = to_process.shape#m -> rows, n -> cols
 	process_parts_filter = np.zeros(n)#clos init by 0, class-> 0 : continuous, 1 : categorize, 2 : binarize
 	if discret_list != []:
 		process_parts_filter[discret_list[0] : discret_list[0] + len(discret_list)] = [2] * len(discret_list)
@@ -63,9 +87,10 @@ def preprocess_one(data_matrix, stand_flag = 0, discret_list = [], binar_list = 
 			res = preprocessing.StandardScaler().fit(target_union).transform(target_union)
 	else:
 		target_other = preprocessing.scale(to_process.T[process_parts_filter == 0].T)
-		box.append(min_max_scaler.fit_transform(target_other))
-		if len(box) != 1:
-			res = np.hstack(box[::-1]) 
+		#total_box.append(min_max_scaler.fit_transform(target_other))
+		total_box.append(target_other)
+		if len(total_box) != 1:
+			res = np.hstack(total_box[::-1]) 
 		else:
 			res = target_other
 	preprocessing_summary = {'categorize_class':categorize_class, \
@@ -250,5 +275,8 @@ if __name__ == '__main__':
 	#--print preprocess(data_matrix, table_frame_test, test_flag = True, stand_flag = 0, discret_list = [3, 4])[0].tolist()
 	for item in table:
 		print item
-	print preprocess_one(table, discret_list = [3, 4], binar_list = [1, 2])[0]
-	print preprocess_one(table)[0]
+	#print preprocess_one(table, discret_list = [3, 4], binar_list = [1, 2])[0]
+	#print preprocess_one(table)[0]
+	#preprocess_one(table, discret_list = [-1], binar_list = [4])[0]
+	print preprocess_one(table, 1, [3, 4])[0]
+	print preprocess_one(table, 2, [3, 4], [1, 2])[0]
