@@ -22,6 +22,8 @@ class test_Zero_v06(unittest.TestCase):
 		self.table = [[1.3,2,3,1,6],[0.0,5,7,2,7],[1.0,-100,20,3,7]]
 		self.preprocess = Step_Zero_Processing_v06.preprocess_one
 		self.column_picker = Step_Zero_Processing_v06.column_picker
+		self.column_rearrange_num = Step_Zero_Processing_v06.column_rearrange_num
+		self.column_get_label_num = Step_Zero_Processing_v06.column_get_label_num
 	def test_preprocess_one(self):
 		print '\nStep_Zero_Processing_v06.preprocess_one() test starting ... '
 		print 'Test 1 --> stand model : 0, discret_list = [], binar_list = [], binar_thr_list = []'
@@ -65,7 +67,6 @@ class test_Zero_v06(unittest.TestCase):
 		self.assertRaises(AssertionError, self.preprocess, self.table, 0, [4], [4], [1, 2])
 		self.assertRaises(AssertionError, self.preprocess, self.table, 0, [-1], [], [])
 		self.assertRaises(AssertionError, self.preprocess, self.table, 0, [], [-1], [])
-
 	def test_column_picker(self):
 		print '\nStep_Zero_Processing_v06.column_picker() test starting ... '
 		print 'Test 1 --> self.table, column_to_pick = [1, 2]'
@@ -94,6 +95,31 @@ class test_Zero_v06(unittest.TestCase):
 		self.assertRaises(ValueError, self.column_picker, self.table, [])
 		self.assertRaises(AssertionError, self.column_picker, self.table, [None])
 		self.assertRaises(AssertionError, self.column_picker, self.table, ["s"])
+	def test_column_rearrange_num(self):
+		print '\nStep_Zero_Processing_v06.test_column_rearrange_num() test starting ... '
+		print 'Test 1 --> self.table, new_order = [4, 3, 2, 1, 0]'
+		Exp = [line[::-1] for line in self.table]
+		funcR = self.column_rearrange_num(self.table, [4, 3, 2, 1, 0])
+		self.assertAlmostEqual((np.array(Exp)-funcR).sum(), 0)
+		print 'Test 2 --> self.table, new_order = [3, 4, 0, 1, 2]'
+		Exp = [[line[3], line[4], line[0], line[1], line[2]] for line in self.table]
+		funcR = self.column_rearrange_num(self.table, [4, 3, 2, 1, 0])
+		self.assertAlmostEqual((np.array(Exp)-funcR).sum(), 0)
+	def test_column_rearrange_num_exception(self):
+		print '\nStep_Zero_Processing_v06.test_column_rearrange_num_exception() test starting ... '
+		print 'Test 1 --> self.table, new_order = [1, 0]/[1, 1, 2, 3, 4]/[0, 2, 1, 3, 5]/["s"]/[None]/[-1]'
+		self.assertRaises(AssertionError, self.column_rearrange_num, self.table, [1, 0])
+		self.assertRaises(AssertionError, self.column_rearrange_num, self.table, [1, 1, 2, 3, 4])
+		self.assertRaises(AssertionError, self.column_rearrange_num, self.table, [0, 2, 1, 3, 5])
+		self.assertRaises(AssertionError, self.column_rearrange_num, self.table, ['s'])
+		self.assertRaises(AssertionError, self.column_rearrange_num, self.table, [None])
+		self.assertRaises(AssertionError, self.column_rearrange_num, self.table, [-1])
+	def test_column_get_label_num(self):
+		print '\nStep_Zero_Processing_v06.column_get_label_num() test starting ... '
+		print "Test 1 --> ori_label = ['a', 'b', 'c', 'd', 'e'], new_label = ['d', 'a', 'b', 'e', 'c']"
+		Exp = [3, 0, 1, 4, 2]
+		funcR = self.column_get_label_num(ori_label = ['a', 'b', 'c', 'd', 'e'], new_label = ['d', 'a', 'b', 'e', 'c'])
+		self.assertEqual(Exp, funcR)
 
 if __name__ == '__main__':
 	unittest.main()

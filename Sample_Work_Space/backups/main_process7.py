@@ -18,7 +18,7 @@ __version__ ="""2013-01-27"""
 __all__ = ['']
 
 #coding:utf8
-from tool_box import Step_Zero_Processing_v06 as SZ
+from tool_box import Step_Zero_Processing_v05 as SZ
 from tool_box import Step_Three_ClassificationReport as ST
 from tool_box import Step_Five_RoC as SF
 from tool_box import Step_Six_Cross_Validation as SS

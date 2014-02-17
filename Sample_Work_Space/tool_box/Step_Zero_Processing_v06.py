@@ -197,6 +197,11 @@ def column_picker(data_matrix, column_to_pick):
 
 def column_rearrange_num(data_matrix, new_order):
 	import numpy as np
+	target = np.array(data_matrix)
+	(m, n) = target.shape
+	assert n == len(set(new_order))
+	assert n == np.array(new_order).max() + 1
+	assert np.array(new_order).min() >= 0
 	new_order_dict = dict([(y, x) for (x, y) in enumerate(new_order)]) 
 	ori_list_dict = dict(enumerate(np.array(data_matrix).T))
 	new_matrix_list = [(new_order_dict[i], ori_list_dict[i]) for i in xrange(len(new_order))]
