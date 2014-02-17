@@ -2,7 +2,7 @@
 ====================
 data processing 
 working with numpy, pandas, scikit-learn
-*stand -1 test can noi be use
+*stand -1 test can not be use
 *test data(after data preprocessing) columns must = training data(after datap rocessing)
 ====================
 
@@ -15,6 +15,65 @@ __all__ = ['']
 
 #coding:utf8
 from operator import *
+
+def preprocess_one(data_matrix, stand_flag = 0, discret_list = [], binar_list = [], binar_thr_list =[]):
+	"""discret_list, binar_list, binar_thr_list, must be list of init/float"""
+	import numpy as np
+	from sklearn import preprocessing
+	matrix_catalog_converter = preprocessing.OneHotEncoder()
+	min_max_scaler = preprocessing.MinMaxScaler()#[0, 1] by default
+	#init
+	to_process = np.array(data_matrix)
+	(m, n) = to_process.shape#m -> rows, n -> cols
+	process_parts_filter = np.zeros(n)#clos init by 0, class-> 0 : continuous, 1 : categorize, 2 : binarize
+	if discret_list != []:
+		process_parts_filter[discret_list[0] : discret_list[0] + len(discret_list)] = [2] * len(discret_list)
+	if binar_list != []:
+		process_parts_filter[binar_list[0] : binar_list[0] + len(binar_list)] = [1] * len(binar_list)
+	total_box = []
+	categorize_class = np.array([])
+	target_binarizer_final_count = 0
+	#processing
+	if discret_list != []:
+		target_discret = to_process.T[process_parts_filter == 2].T
+		categorize_class = map(lambda x:len(set(x)), target_discret.T)
+		categorize_sizes = sum(categorize_class)
+		discret_adjust = target_discret.min()
+		matrix_catalog_converter.fit(target_discret - discret_adjust)
+		target_discret_final = matrix_catalog_converter.transform(target_discret - discret_adjust).toarray()
+		total_box.append(target_discret_final)
+	if binar_list != []:
+		target_binarizer = to_process.T[process_parts_filter == 1]
+		if binar_thr_list == []:
+			binar_thr_list = [x.mean() for x in target_binarizer]
+		target_binarizer_final = np.vstack(map(lambda l:preprocessing.Binarizer(threshold = binar_thr_list[l]).transform(target_binarizer[l]), range(len(binar_list)))).T
+		target_binarizer_final_count = target_binarizer_final.shape[1]
+		total_box.append(target_binarizer_final)
+
+	if stand_flag != 2:
+		target_other = min_max_scaler.fit_transform(to_process.T[process_parts_filter == 0].T)
+		total_box.append(target_other)
+		if len(total_box) != 1:
+			target_union = np.hstack(total_box[::-1]) 
+		else:
+			target_union = target_other
+		if stand_flag == 0:
+			res = target_union
+		elif stand_flag == 1:
+			res = preprocessing.StandardScaler().fit(target_union).transform(target_union)
+	else:
+		target_other = preprocessing.scale(to_process.T[process_parts_filter == 0].T)
+		box.append(min_max_scaler.fit_transform(target_other))
+		if len(box) != 1:
+			res = np.hstack(box[::-1]) 
+		else:
+			res = target_other
+	preprocessing_summary = {'categorize_class':categorize_class, \
+	'no change column':(0, target_other.shape[1]), \
+		'binarized column':(target_other.shape[1], target_other.shape[1]+target_binarizer_final_count), \
+		'discret column':(n-len(categorize_class),n-len(categorize_class)+sum(categorize_class)), \
+		'standardization':stand_flag}
+	return (res, preprocessing_summary)
 
 def preprocess(data_matrix, data_matrix_test = '', stand_flag = 0, test_flag = False, discret_list = [], binar_list = [], binar_thr_list = []):
 	"""data_matrix : two-dimensional array; feature matrix.
@@ -153,16 +212,16 @@ if __name__ == '__main__':
 	#print my_binarizer(to_prepare, t)
 
 	#4--
-	table = [[1.3,2,3,1,6],[0.0,5,7,2,7],[1.0,-100,20,3,7]]
-	table_test = [[3,3,3,3,3], [4,4,4,4,4]]
+	table = [[1/2,2,3,1,-6],[0.0,5,7,2,7],[1.0,-100,20,3,7]]
+	#--table_test = [[3,3,3,3,3], [4,4,4,4,4]]
 	#for item in table:
 	#	print item
-	table_ =  np.array(table)
-	table_test_ = np.array(table_test)
-	data = {'a':table_[:,0], 'b':table_[:,1], 'c':table_[:,2], 'd':table_[:,3], 'e':table_[:,4]}
-	data_test = {'a':table_test_[:,0], 'b':table_test_[:,1], 'c':table_test_[:,2], 'd':table_test_[:,3], 'e':table_test_[:,4]}
-	table_frame = pd.DataFrame(data)
-	table_frame_test = pd.DataFrame(data_test)
+	#--table_ =  np.array(table)
+	#--table_test_ = np.array(table_test)
+	#--data = {'a':table_[:,0], 'b':table_[:,1], 'c':table_[:,2], 'd':table_[:,3], 'e':table_[:,4]}
+	#--data_test = {'a':table_test_[:,0], 'b':table_test_[:,1], 'c':table_test_[:,2], 'd':table_test_[:,3], 'e':table_test_[:,4]}
+	#--table_frame = pd.DataFrame(data)
+	#--table_frame_test = pd.DataFrame(data_test)
 	#print preprocess(table, discret_list = [3, 4], binar_list = [1, 2], binar_thr_list = [0, 10])
 	#print preprocess(table, discret_list = [3, 4], binar_list = [1, 2])
 	#print preprocess(table, stand_flag = 2, discret_list = [3, 4], binar_list = [1, 2])
@@ -183,9 +242,13 @@ if __name__ == '__main__':
 	#print column_picker_pandas(table_frame, ['a','c'])
 	#print column_picker(table, column_get_label_num(['a', 'b', 'c', 'd', 'e'], ['a', 'c']))
 	#9 preprocess for test
-	print table_frame
-	print table_frame_test
-	print preprocess(table_frame, stand_flag = 0, discret_list = [3, 4])[0].tolist()
+	#--print table_frame
+	#--print table_frame_test
+	#--print preprocess(table_frame, stand_flag = 0, discret_list = [3, 4])[0].tolist()
 	#print preprocess(table_frame_test, stand_flag = 0, discret_list = [3, 4],  binar_thr_list = [0, 10])[0].tolist()
-	data_matrix = pd.concat([table_frame, table_frame_test])
-	print preprocess(data_matrix, table_frame_test, test_flag = True, stand_flag = 0, discret_list = [3, 4])[0].tolist()
+	#--data_matrix = pd.concat([table_frame, table_frame_test])
+	#--print preprocess(data_matrix, table_frame_test, test_flag = True, stand_flag = 0, discret_list = [3, 4])[0].tolist()
+	for item in table:
+		print item
+	print preprocess_one(table, discret_list = [3, 4], binar_list = [1, 2])[0]
+	print preprocess_one(table)[0]
