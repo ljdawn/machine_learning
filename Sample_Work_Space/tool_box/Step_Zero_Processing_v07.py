@@ -110,7 +110,7 @@ def preprocess(data_matrix, data_matrix_test = '', stand_flag = 0, test_flag = F
 		discret_list : the column to discretize; list of column_num; like [1,2,3,4] 
 		binar_list : the column to binarize; list of column_num; like [1,2,3,4]
 		binar_thr_list : threshold to be binarized *defult -> mean of column
-		test_flag : True -> output:training data(upper), False - > output:test data(lower)  
+		test_flag : False -> output:training data(upper), True - > output:test data(lower)  
 	"""
 	import numpy as np
 	from sklearn import preprocessing
