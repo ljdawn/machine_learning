@@ -13,6 +13,7 @@ __all__ = ['']
 
 #coding:utf8
 from operator import *
+import cProfile
 
 def preprocess_one(data_matrix, stand_flag = 0, discret_list = [], binar_list = [], binar_thr_list =[]):
 	"""data_matrix : two-dimensional array; feature matrix.
