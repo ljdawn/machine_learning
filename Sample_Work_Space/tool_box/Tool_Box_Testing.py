@@ -34,8 +34,21 @@ class test_Zero_v07(unittest.TestCase):
 	def test_preprocess(self):
 		logging.info('Step_Zero_Processing_v07.preprocess() test ...')
 		logging.debug('Test 1 --> stand model : 0, discret_list = [], binar_list = [], binar_thr_list = []')
-		print self.preprocess_ori(self.table, self.table_te, test_flag = False, discret_list = [3, 4], binar_thr_list = [1, 2])[0]
-		print self.preprocess_ori(self.table, self.table_te, test_flag = True, discret_list = [3, 4], binar_thr_list = [1, 2])[0]
+		Exp = self.preprocess(self.table)[0][:(len(self.table)-len(self.table_te))]
+		funcR = self.preprocess_ori(self.table, self.table_te, test_flag = False)[0]
+		self.assertAlmostEqual((np.array(Exp)-funcR).sum(), 0)
+		Exp = self.preprocess(self.table)[0][(len(self.table)-len(self.table_te)):]
+		funcR = self.preprocess_ori(self.table, self.table_te, test_flag = True)[0]
+		self.assertAlmostEqual((np.array(Exp)-funcR).sum(), 0)
+		logging.debug('Test 2 --> stand model : 0, discret_list = [3, 4], binar_list = [], binar_thr_list = []')
+		Exp = self.preprocess(self.table, 0, [3, 4])[0][:(len(self.table)-len(self.table_te))]
+		funcR = self.preprocess_ori(self.table, self.table_te, test_flag = False, discret_list = [3, 4])[0]
+		self.assertAlmostEqual((np.array(Exp)-funcR).sum(), 0)
+		Exp = self.preprocess(self.table, 0, [3, 4])[0][(len(self.table)-len(self.table_te)):]
+		funcR = self.preprocess_ori(self.table, self.table_te, test_flag = True, discret_list = [3, 4])[0]
+		self.assertAlmostEqual((np.array(Exp)-funcR).sum(), 0)
+	def test_preprocess_exception(self):
+		logging.info('Step_Zero_Processing_v07.preprocess_exception() test ...')
 	def test_preprocess_one(self):
 		logging.info('Step_Zero_Processing_v07.preprocess_one() test ...')
 		logging.debug('Test 1 --> stand model : 0, discret_list = [], binar_list = [], binar_thr_list = []')
