@@ -219,6 +219,14 @@ def column_picker_pandas(data_matrix, column_to_pick = []):
 
 column_rearrange_num_pandas = column_picker_pandas
 
+def my_binarizer(*args):
+	from sklearn import preprocessing
+	import numpy as np
+	assert len(args) == 2
+	threshold = args[1]
+	binarizer = preprocessing.Binarizer(threshold)
+	return binarizer.transform(np.array(args[0]))
+
 if __name__ == '__main__':
 	pass
 
