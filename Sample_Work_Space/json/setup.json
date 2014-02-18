@@ -5,19 +5,19 @@
 	"stand_flag" : 0,
 	"method_desc" : "'SVM', 'logstic', 'GaussianNB', 'DecisionTree', 'RandomForest', 'AdaBoost'", 
 	"method" : "logstic",
-	"column_list_fn_ori" : "config/head_ori",
-	"column_list_fn_new" : "config/head_new",
+	"column_list_fn_ori" : "config/ori",
+	"column_list_fn_new" : "config/new",
 	"tol" : 1e-8,
 	"penalty" : "l1",
 	"C" : 1,
-	"Class_weight" :{"0" : 1.0, "1" : 10},
+	"Class_weight" :{"0" : 1.0, "1" : 1.0},
 	"grid_search_flag" : "disable",
 	"grid_search_parameter" : {"penalty":["l1", "l2"],"C":[1, 10, 100]},
-	"logstic_threshold" : 0.1,
+	"logstic_threshold" : 0.5,
 	"CV_score" : "disable",
 	"cv_fold" : 3,
 	"ROC_plot" : "disable",
-	"P" : 0.05,
+	"P" : 1,
 	"model_detailed" : 
 		{
 			"1" : 
@@ -56,10 +56,10 @@
 				"binar_thr_list" : []
 				}, 		
 			"0" : 
-				{"column_to_use_fn" : "config/f_4_af", 
-				"data_file" : "data/wt_sample_4_201201.txt", 
-				"data_file_test" : "data/wt_sample_4_201204.txt",
-				"discret_list" : [6,7,8,9,10,11,12,13,14], 
+				{"column_to_use_fn" : "config/f", 
+				"data_file" : "data/train.data", 
+				"data_file_test" : "data/test.data",
+				"discret_list" : [2], 
 				"binar_list" : [], 
 				"binar_thr_list" : []
 				} 

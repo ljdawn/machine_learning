@@ -16,7 +16,7 @@ __version__ ="""2013-01-27"""
 __all__ = ['']
 
 #coding:utf8
-from tool_box import Step_Zero_Processing_v06 as SZ
+from tool_box import Step_Zero_Processing_v07 as SZ
 from tool_box import Step_Three_ClassificationReport as ST
 from tool_box import Step_Five_RoC as SF
 from tool_box import Step_Six_Cross_Validation as SS
@@ -73,22 +73,26 @@ def get_table(fn, column_name_list = [], sep = '\t'):
 def main_pandas(column_list_fn_ori, column_list_fn_new, column_to_use_fn, data_file, to_test, discret_list, binar_list, binar_thr_list, stand_flag = 0, p = 0.05):
 	#---process start---
 	column_label_ori = get_list(column_list_fn_ori)
+	logging.debug(column_label_ori)
 	column_label_new = get_list(column_list_fn_new)
+	logging.debug(column_label_new)
 	column_num_new = column_get_label_num(column_label_ori, column_label_new)
+	logging.debug(column_num_new)
 	data_matrix_tr = get_table(data_file, column_label_ori)
 	data_matrix_te = get_table(to_test, column_label_ori)
 	data_matrix = pd.concat([data_matrix_tr, data_matrix_te])
 	column_to_use_list = get_list(column_to_use_fn)
+	logging.debug(column_to_use_list)
 	column_new_list = get_new_list(column_label_new, column_to_use_list)
+	logging.debug(column_new_list)
 	data_matrix_m = data_matrix[column_label_new]
 	data_matrix_eff = data_matrix_m[column_new_list].values
 	data_matrix_eff_float = [map(lambda x:float(x) if not math.isnan(x) else 0, line) for line in data_matrix_eff.tolist()]
+	logging.debug(data_matrix_eff)
 	#<<step 2 -- preprossing data_matrix-- >>
 	#def column type
 	(X, process_summary) = preprocess(data_matrix_eff_float, data_matrix_test = data_matrix_te, test_flag = False, stand_flag = stand_flag, discret_list = discret_list, binar_list = binar_list)
 	training_data_width = len(X[0])
-	print len(X)
-
 
 	#print 'train_data_width', training_data_width
 	nochange_ = process_summary['no change column']
@@ -137,8 +141,8 @@ def main_pandas_for_test(data_file, to_test, train_data_width, feature_selected_
 	#def column type
 	(X, process_summary) = preprocess(data_matrix_eff_float, data_matrix_test = data_matrix_te, test_flag = True, stand_flag = stand_flag, discret_list = discret_list, binar_list = binar_list)
 	test_data_width = len(X[0])
-	print '!', 'test_data_width', test_data_width,'<-->' ,'training_data_width', training_data_width, 'important!!'
-	#assert training_data_width == test_data_width
+	logging.debug('!'+ 'test_data_width'+ str(test_data_width) +'<-->' +'training_data_width'+ str(training_data_width)+ 'important!!')
+	assert training_data_width == test_data_width
 	#<<step 3 -- get flag-- >>
 	y = np.array(map(float, get_One_col(to_test)))
 	#<<step 4 -- feature_selection -- >>
@@ -146,6 +150,7 @@ def main_pandas_for_test(data_file, to_test, train_data_width, feature_selected_
 	return (X_selected, y)
 
 if __name__ == '__main__':
+	logging.basicConfig(level = logging.INFO)
 	"""loop the set_up file"""
 	jsonpath = 'json/'
 	fnlist = ['setup.json',]
@@ -193,8 +198,11 @@ if __name__ == '__main__':
 		(X_selected, y, F_selected, training_data_width) = main_pandas(column_list_fn_ori = column_list_fn_ori, column_list_fn_new = column_list_fn_new, column_to_use_fn = column_to_use_fn, data_file = data_file, \
 			to_test = data_file_test, stand_flag = stand_flag, discret_list = discret_list, binar_list = binar_list, binar_thr_list = binar_thr_list, p = p)
 		#term 1 ==================================================
-	
+		logging.debug(X_selected)
+		logging.debug(y)
+		logging.debug(F_selected)
 		#term 2 ==================================================
+		print '-'*100
 		timer('<< -- training '+ model_M +' -- >>')
 		"""model fitting : 1, y_ -> predicted values 2, -> predicted values in probility"""
 		if model_M == 'logstic':
@@ -232,7 +240,6 @@ if __name__ == '__main__':
 		
 		#term 3 ==================================================
 		print 'confusion_matrix:'
-		"""confusion_matrix"""
 		print 'CMAT', '[0]','----', '[1]'
 		print '[0]', '|', my_report(y,y_)[0][0][0], '\t', my_report(y,y_)[0][0][1], '|' 
 		print '[1]', '|', my_report(y,y_)[0][1][0], '\t', my_report(y,y_)[0][1][1], '|'
@@ -253,7 +260,6 @@ if __name__ == '__main__':
 	
 		#term 4 ==================================================
 		print 'summary report:'
-		"""detailed report"""
 		print my_report(y,y_)[1]
 		#term 4 ==================================================
 	
@@ -281,4 +287,4 @@ if __name__ == '__main__':
 		#term 6 ==================================================
 		end_time =  datetime.now()
 		print 'time_cost:', str(end_time - start_time)
-		print 'current Model:', model_flag, '\n', 'current Classifier:', model_M, '\n','-'*100, '\n'
+		print 'current Model:', model_flag, '\n', 'current Classifier:', model_M, '\n','-'*100
