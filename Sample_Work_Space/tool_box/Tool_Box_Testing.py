@@ -12,21 +12,32 @@ __all__ = ['']
 import unittest
 import logging
 import numpy as np
-import Step_Zero_Processing_v06
+import Step_Zero_Processing_v07
 from sklearn import preprocessing
 
 min_max_scaler = preprocessing.MinMaxScaler()
 
-class test_Zero_v06(unittest.TestCase):
+class test_Zero_v07(unittest.TestCase):
 	def setUp(self):
 		"""a real data like data matrix, every element in the matrix must be int/float"""
 		self.table = [[1.3,2,3,1,6],[0.0,5,7,2,7],[1.0,-100,20,3,7]]
-		self.preprocess = Step_Zero_Processing_v06.preprocess_one
-		self.column_picker = Step_Zero_Processing_v06.column_picker
-		self.column_rearrange_num = Step_Zero_Processing_v06.column_rearrange_num
-		self.column_get_label_num = Step_Zero_Processing_v06.column_get_label_num
+		self.table_tr = [[1.3,2,3,1,6],[0.0,5,7,2,7]]
+		self.table_te = [[1.0,-100,20,3,7]]
+		self.table_1 = [[10, 9]]
+		self.table_tr_1 = [[1.3,2,3,1,6],[0.0,5,7,2,7]]
+		self.table_te_1 = [[1.0,-100,20,3,7]]
+		self.preprocess_ori = Step_Zero_Processing_v07.preprocess
+		self.preprocess = Step_Zero_Processing_v07.preprocess_one
+		self.column_picker = Step_Zero_Processing_v07.column_picker
+		self.column_rearrange_num = Step_Zero_Processing_v07.column_rearrange_num
+		self.column_get_label_num = Step_Zero_Processing_v07.column_get_label_num
+	def test_preprocess(self):
+		logging.info('Step_Zero_Processing_v07.preprocess() test ...')
+		logging.debug('Test 1 --> stand model : 0, discret_list = [], binar_list = [], binar_thr_list = []')
+		print self.preprocess_ori(self.table, self.table_te, test_flag = False, discret_list = [3, 4], binar_thr_list = [1, 2])[0]
+		print self.preprocess_ori(self.table, self.table_te, test_flag = True, discret_list = [3, 4], binar_thr_list = [1, 2])[0]
 	def test_preprocess_one(self):
-		logging.info('Step_Zero_Processing_v06.preprocess_one() test ...')
+		logging.info('Step_Zero_Processing_v07.preprocess_one() test ...')
 		logging.debug('Test 1 --> stand model : 0, discret_list = [], binar_list = [], binar_thr_list = []')
 		#print 'Expecting : '
 		#print min_max_scaler.fit_transform(self.table)
@@ -53,7 +64,7 @@ class test_Zero_v06(unittest.TestCase):
 		logging.debug('Test 9 --> stand model : 2, discret_list = [], binar_list = [3, 4], binar_thr_list = [], test manually')
 		logging.debug('Test 10 --> stand model : 2, discret_list = [], binar_list = [3, 4], binar_thr_list = [1, 2], test manually')
 	def test_preprocess_one_exception(self):
-		logging.info('Step_Zero_Processing_v06.preprocess_one() Exception test ... ')
+		logging.info('Step_Zero_Processing_v07.preprocess_one() Exception test ... ')
 		logging.debug('Test 1 --> stand model : 0, discret_list = ["s"], binar_list = ["s"], binar_thr_list = ["s"]') 
 		self.assertRaises(TypeError, self.preprocess, self.table, 0, ["s"])
 		self.assertRaises(AssertionError, self.preprocess, self.table, 0, [None])
@@ -69,7 +80,7 @@ class test_Zero_v06(unittest.TestCase):
 		self.assertRaises(AssertionError, self.preprocess, self.table, 0, [-1], [], [])
 		self.assertRaises(AssertionError, self.preprocess, self.table, 0, [], [-1], [])
 	def test_column_picker(self):
-		logging.info('Step_Zero_Processing_v06.column_picker() test ... ')
+		logging.info('Step_Zero_Processing_v07.column_picker() test ... ')
 		logging.debug('Test 1 --> self.table, column_to_pick = [1, 2]')
 		Exp = [[2, 3],[5, 7],[-100, 20]]
 		funcR = self.column_picker(self.table, [1, 2])
@@ -87,7 +98,7 @@ class test_Zero_v06(unittest.TestCase):
 		funcR = self.column_picker(self.table, [4])
 		self.assertAlmostEqual((np.array(Exp)-funcR).sum(), 0)
 	def test_column_picker_exception(self):
-		logging.info('Step_Zero_Processing_v06.test_column_picker_exception() test ... ')
+		logging.info('Step_Zero_Processing_v07.test_column_picker_exception() test ... ')
 		logging.debug('Test 1 --> self.table, column_to_pick = [7]')
 		self.assertRaises(AssertionError, self.column_picker, self.table, [7])
 		logging.debug('Test 2 --> self.table, column_to_pick = [-7]')
@@ -97,7 +108,7 @@ class test_Zero_v06(unittest.TestCase):
 		self.assertRaises(AssertionError, self.column_picker, self.table, [None])
 		self.assertRaises(AssertionError, self.column_picker, self.table, ["s"])
 	def test_column_rearrange_num(self):
-		logging.info('Step_Zero_Processing_v06.test_column_rearrange_num() test ... ')
+		logging.info('Step_Zero_Processing_v07.test_column_rearrange_num() test ... ')
 		logging.debug('Test 1 --> self.table, new_order = [4, 3, 2, 1, 0]')
 		Exp = [line[::-1] for line in self.table]
 		funcR = self.column_rearrange_num(self.table, [4, 3, 2, 1, 0])
@@ -107,7 +118,7 @@ class test_Zero_v06(unittest.TestCase):
 		funcR = self.column_rearrange_num(self.table, [4, 3, 2, 1, 0])
 		self.assertAlmostEqual((np.array(Exp)-funcR).sum(), 0)
 	def test_column_rearrange_num_exception(self):
-		logging.info('Step_Zero_Processing_v06.test_column_rearrange_num_exception() test ... ')
+		logging.info('Step_Zero_Processing_v07.test_column_rearrange_num_exception() test ... ')
 		logging.debug('Test 1 --> self.table, new_order = [1, 0]/[1, 1, 2, 3, 4]/[0, 2, 1, 3, 5]/["s"]/[None]/[-1]')
 		self.assertRaises(AssertionError, self.column_rearrange_num, self.table, [1, 0])
 		self.assertRaises(AssertionError, self.column_rearrange_num, self.table, [1, 1, 2, 3, 4])
@@ -116,7 +127,7 @@ class test_Zero_v06(unittest.TestCase):
 		self.assertRaises(AssertionError, self.column_rearrange_num, self.table, [None])
 		self.assertRaises(AssertionError, self.column_rearrange_num, self.table, [-1])
 	def test_column_get_label_num(self):
-		logging.info('Step_Zero_Processing_v06.column_get_label_num() test ... ')
+		logging.info('Step_Zero_Processing_v07.column_get_label_num() test ... ')
 		logging.debug("Test 1 --> ori_label = ['a', 'b', 'c', 'd', 'e'], new_label = ['d', 'a', 'b', 'e', 'c']")
 		Exp = [3, 0, 1, 4, 2]
 		funcR = self.column_get_label_num(ori_label = ['a', 'b', 'c', 'd', 'e'], new_label = ['d', 'a', 'b', 'e', 'c'])

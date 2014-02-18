@@ -41,6 +41,7 @@ column_picker = SZ.column_picker
 column_rearrange_num = SZ.column_rearrange_num
 column_get_label_num = SZ.column_get_label_num
 preprocess = SZ.preprocess
+preprocess_one = SZ.preprocess_one
 my_binarizer = SZ.my_binarizer
 my_report = ST.my_report
 my_PRC = SF.my_PRC
@@ -76,7 +77,7 @@ def main_pandas(column_list_fn_ori, column_list_fn_new, column_to_use_fn, data_f
 	column_num_new = column_get_label_num(column_label_ori, column_label_new)
 	data_matrix_tr = get_table(data_file, column_label_ori)
 	data_matrix_te = get_table(to_test, column_label_ori)
-	data_matrix = pd.concat([data_matrix_te, data_matrix_tr])
+	data_matrix = pd.concat([data_matrix_tr, data_matrix_te])
 	column_to_use_list = get_list(column_to_use_fn)
 	column_new_list = get_new_list(column_label_new, column_to_use_list)
 	data_matrix_m = data_matrix[column_label_new]
@@ -84,8 +85,11 @@ def main_pandas(column_list_fn_ori, column_list_fn_new, column_to_use_fn, data_f
 	data_matrix_eff_float = [map(lambda x:float(x) if not math.isnan(x) else 0, line) for line in data_matrix_eff.tolist()]
 	#<<step 2 -- preprossing data_matrix-- >>
 	#def column type
-	(X, process_summary) = preprocess(data_matrix_eff_float, data_matrix_test = data_matrix_tr, test_flag = True, stand_flag = stand_flag, discret_list = discret_list, binar_list = binar_list)
+	(X, process_summary) = preprocess(data_matrix_eff_float, data_matrix_test = data_matrix_te, test_flag = False, stand_flag = stand_flag, discret_list = discret_list, binar_list = binar_list)
 	training_data_width = len(X[0])
+	print len(X)
+
+
 	#print 'train_data_width', training_data_width
 	nochange_ = process_summary['no change column']
 	discret_ = process_summary['discret column']
