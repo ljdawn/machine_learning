@@ -1,13 +1,11 @@
 """
 ====================
-model 
 working with numpy, pandas, scikit-learn, statsmodels, scipy
 *standardization : z-score 
 *feature_selection : Chi-squared
 *mehtod : SVM, logstic, GaussianNB, DecisionTree, RandomForest, AdaBoost
 **cost sensitive learning added (sample weights)
 **grid searching for (L1, L2, C)  added
-**main_pandas is 3times faster
 ====================
 
 """
@@ -34,6 +32,7 @@ import statsmodels.api as sm
 import itertools
 import json
 import math
+import logging
 from datetime import datetime
 from scipy import stats
 

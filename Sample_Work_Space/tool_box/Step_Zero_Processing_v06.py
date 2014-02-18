@@ -7,7 +7,7 @@ working with numpy, pandas, scikit-learn
 """
 __author__ = """\n""".join(['Xuan Zhang'])
 
-__version__ ="""2013-02-14"""
+__version__ = """2013-02-18"""
 
 __all__ = ['']
 
