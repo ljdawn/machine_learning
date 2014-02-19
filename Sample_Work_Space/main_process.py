@@ -11,7 +11,7 @@ working with numpy, pandas, scikit-learn, statsmodels, scipy
 """
 __author__ = """\n""".join(['Xuan Zhang'])
 
-__version__ ="""2013-01-27"""
+__version__ ="""2013-02-19"""
 
 __all__ = ['']
 
@@ -26,6 +26,7 @@ from sklearn import linear_model, svm, tree
 from sklearn.naive_bayes import GaussianNB
 from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
 from sklearn import grid_search
+from sklearn.preprocessing import Imputer
 import numpy as np
 import pandas as pd
 import statsmodels.api as sm
@@ -47,6 +48,8 @@ my_report = ST.my_report
 my_PRC = SF.my_PRC
 my_CV = SS.my_CV
 my_FS = SO.my_FS	
+
+imp = Imputer(missing_values='NaN', strategy='mean', axis=0)
 
 #---main functions---
 def get_list(fn):
@@ -87,7 +90,8 @@ def main_pandas(column_list_fn_ori, column_list_fn_new, column_to_use_fn, data_f
 	logging.debug(column_new_list)
 	data_matrix_m = data_matrix[column_label_new]
 	data_matrix_eff = data_matrix_m[column_new_list].values
-	data_matrix_eff_float = [map(lambda x:float(x) if not math.isnan(x) else 0, line) for line in data_matrix_eff.tolist()]
+	#data_matrix_eff_float = [map(lambda x:float(x) if not math.isnan(x) else 0, line) for line in data_matrix_eff.tolist()]
+	data_matrix_eff_float = imp.fit(data_matrix_eff).transform(data_matrix_eff)
 	logging.debug(data_matrix_eff)
 	#<<step 2 -- preprossing data_matrix-- >>
 	#def column type
@@ -136,7 +140,8 @@ def main_pandas_for_test(data_file, to_test, train_data_width, feature_selected_
 	column_new_list = get_new_list(column_label_new, column_to_use_list)
 	data_matrix_m = data_matrix[column_label_new]
 	data_matrix_eff = data_matrix_m[column_new_list].values
-	data_matrix_eff_float = [map(lambda x:float(x) if not math.isnan(x) else 0, line) for line in data_matrix_eff.tolist()]
+	#data_matrix_eff_float = [map(lambda x:float(x) if not math.isnan(x) else 0, line) for line in data_matrix_eff.tolist()]
+	data_matrix_eff_float = imp.fit(data_matrix_eff).transform(data_matrix_eff)
 	#<<step 2 -- preprossing data_matrix-- >>
 	#def column type
 	(X, process_summary) = preprocess(data_matrix_eff_float, data_matrix_test = data_matrix_te, test_flag = True, stand_flag = stand_flag, discret_list = discret_list, binar_list = binar_list)

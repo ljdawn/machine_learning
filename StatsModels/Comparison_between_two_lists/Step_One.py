@@ -48,4 +48,7 @@ if __name__ == '__main__':
     f_r_a = f_r[clo_an]
     print clo_name, ':', view_histogram(f_l_c, f_r_c, range_histogram(f_l_c, f_r_c))
     print single_ols(f_l_c, f_l_a)
+    for item in f_r_c:
+    	if item not in (0,1,2):
+    		print item
     #print single_ols(f_r_c, f_r_a)
