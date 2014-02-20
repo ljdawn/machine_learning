@@ -61,28 +61,28 @@ if __name__ == '__main__':
         #f_l_c = np.array(data_l_i[0]).tolist()
         #f_r_c = np.array(data_r_i[0]).tolist()
 
-        plt.subplot(211)
-        n, bins_1, patches = plt.hist(f_l_c, range_histogram(f_l_c, f_r_c), normed=1, facecolor='green', alpha=0.5)
-        y1 = mlab.normpdf(bins_1, np.array(f_l_c).mean(), np.array(f_l_c).var())
-        plt.ylabel('Frequence')
-        plt.subplots_adjust(left=0.15)
-        plt.title(r'Histogram:'+ clo_name)
-        plt.subplot(212)
-        n, bins_2, patches = plt.hist(f_r_c, range_histogram(f_l_c, f_r_c), normed=1, facecolor='red', alpha=0.5)
-        y2 = mlab.normpdf(bins_2, np.array(f_r_c).mean(), np.array(f_r_c).var())
-        plt.ylabel('Frequence')
-        plt.xlabel('Class/Values')
-        plt.subplots_adjust(left=0.15)
-        #plt.show()
-        plt.savefig(clo_name+'.pdf')
-        #plt.show()
+       #plt.subplot(211)
+       #n, bins_1, patches = plt.hist(f_l_c, range_histogram(f_l_c, f_r_c), normed=1, facecolor='green', alpha=0.5)
+       #y1 = mlab.normpdf(bins_1, np.array(f_l_c).mean(), np.array(f_l_c).var())
+       #plt.ylabel('Frequence')
+       #plt.subplots_adjust(left=0.15)
+       #plt.title(r'Histogram:'+ clo_name)
+       #plt.subplot(212)
+       #n, bins_2, patches = plt.hist(f_r_c, range_histogram(f_l_c, f_r_c), normed=1, facecolor='red', alpha=0.5)
+       #y2 = mlab.normpdf(bins_2, np.array(f_r_c).mean(), np.array(f_r_c).var())
+       #plt.ylabel('Frequence')
+       #plt.xlabel('Class/Values')
+       #plt.subplots_adjust(left=0.15)
+       ##plt.savefig(clo_name+'.pdf')
+
         print clo_name, ':', 
         old, new,  base = view_histogram(f_l_c, f_r_c, range_histogram(f_l_c, f_r_c))
+        print ','.join(map(str, old)), ','.join(map(str, new)), ','.join(map(str, base[:-1]))
         #print single_ols(data_l_i[0], data_l_i[1])
         #print single_ols(data_r_i[0], data_r_i[1])
-    #namelist = ['tenure_days','on_d14','on_m6','fn_d14','fn_m1','aan_d7','aan_m2','cn_m6s0','cn_m6s20','cn_m6s60',\
-    #'cn_d7s120','cn_m6s180','cn_m1s180','cn_d7s180','dist_first_call','county_id','trade1_id','trade2_id','cust_type',\
-    #'site_type','no_site_type','hint_source1','hint_source2','cust_source']
-    namelist = ['chengdan_flag']
+    namelist = ['tenure_days','on_d14','on_m6','fn_d14','fn_m1','aan_d7','aan_m2','cn_m6s0','cn_m6s20','cn_m6s60',\
+    'cn_d7s120','cn_m6s180','cn_m1s180','cn_d7s180','dist_first_call','county_id','trade1_id','trade2_id','cust_type',\
+    'site_type','no_site_type','hint_source1','hint_source2','cust_source']
+    #namelist = ['chengdan_flag']
     for clo_name in namelist:
         work(clo_name, clo_an)
