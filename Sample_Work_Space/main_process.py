@@ -4,6 +4,7 @@ working with numpy, pandas, scikit-learn, statsmodels, scipy
 *standardization : z-score 
 *feature_selection : Chi-squared
 *mehtod : SVM, logstic, GaussianNB, DecisionTree, RandomForest, AdaBoost
+*missing values strategy updated -> mean, median, most_frequent
 **cost sensitive learning added (sample weights)
 **grid searching for (L1, L2, C)  added
 ====================
@@ -49,7 +50,11 @@ my_PRC = SF.my_PRC
 my_CV = SS.my_CV
 my_FS = SO.my_FS	
 
+#---missing values strategy
 imp = Imputer(missing_values='NaN', strategy='mean', axis=0)
+#If “mean”, then replace missing values using the mean along the axis.
+#If “median”, then replace missing values using the median along the axis.
+#If “most_frequent”, then replace missing using the most frequent value along the axis.
 
 #---main functions---
 def get_list(fn):

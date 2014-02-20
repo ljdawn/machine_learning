@@ -14,6 +14,9 @@ import pandas as pd
 import numpy as np
 import scipy as sp
 import statsmodels.api as sm
+from sklearn.preprocessing import Imputer
+
+imp = Imputer(missing_values='NaN', strategy='mean', axis=0)
 
 def range_histogram(list_left, list_right):
 	list_left = np.array(list_left)
@@ -41,6 +44,8 @@ if __name__ == '__main__':
     clo_n = [cle.strip() for cle in open(head_path, 'r').readlines()]
     f_l = pd.read_table(l_path, names = clo_n, sep = '\t')
     f_r = pd.read_table(r_path, names = clo_n, sep = '\t')
+    f_l = imp.fit(f_l).transform(f_l)
+    f_r = imp.fit(f_r).transform(f_r)
 
     f_l_c = f_l[clo_name]
     f_l_a = f_l[clo_an]
