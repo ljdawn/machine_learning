@@ -44,16 +44,18 @@ if __name__ == '__main__':
     clo_n = [cle.strip() for cle in open(head_path, 'r').readlines()]
     f_l = pd.read_table(l_path, names = clo_n, sep = '\t')
     f_r = pd.read_table(r_path, names = clo_n, sep = '\t')
-    f_l = imp.fit(f_l).transform(f_l)
-    f_r = imp.fit(f_r).transform(f_r)
 
     f_l_c = f_l[clo_name]
     f_l_a = f_l[clo_an]
     f_r_c = f_r[clo_name]
     f_r_a = f_r[clo_an]
+    
+    data_l = np.hstack((np.array([f_l_c]).T, np.array([f_l_a]).T))
+    data_r = np.hstack((np.array([f_r_c]).T, np.array([f_r_a]).T))
+
+    data_l_i = imp.fit(data_l).transform(data_l).T
+    data_r_i = imp.fit(data_r).transform(data_r).T
+
     print clo_name, ':', view_histogram(f_l_c, f_r_c, range_histogram(f_l_c, f_r_c))
-    print single_ols(f_l_c, f_l_a)
-    for item in f_r_c:
-    	if item not in (0,1,2):
-    		print item
-    #print single_ols(f_r_c, f_r_a)
+    print single_ols(data_l_i[0], data_l_i[1])
+    print single_ols(data_r_i[0], data_r_i[1])
