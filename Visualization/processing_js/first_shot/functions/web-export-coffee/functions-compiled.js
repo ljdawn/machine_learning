@@ -1,6 +1,6 @@
-var SketchStatementscomments;
+var SketchFunctions;
 
-SketchStatementscomments = (function() {
+SketchFunctions = (function() {
     var ADD=ALIGN_CENTER=ALIGN_LEFT=ALIGN_RIGHT=ALPHA=ALPHA_MASK=ALT=AMBIENT=ARGB=ARROW=BACKSPACE=BASELINE=BEVEL=BLEND=BLUE_MASK=BLUR=BOTTOM=BURN=CENTER=CHATTER=CLOSE=CMYK=CODED=COMPLAINT=COMPONENT=COMPOSITE=CONCAVE_POLYGON=CONTROL=CONVEX_POLYGON=CORNER=CORNERS=CROSS=CUSTOM=DARKEST=DEGREES=DEG_TO_RAD=DELETE=DIAMETER=DIFFERENCE=DIFFUSE=DILATE=DIRECTIONAL=DISABLED=DODGE=DOWN=DXF=ENTER=EPSILON=ERODE=ESC=EXCLUSION=GIF=GRAY=GREEN_MASK=GROUP=HALF=HALF_PI=HAND=HARD_LIGHT=HINT_COUNT=HSB=IMAGE=INVERT=JAVA2D=JPEG=
     LEFT=LIGHTEST=LINES=LINUX=MACOSX=MAX_FLOAT=MAX_INT=MITER=MODEL=MOVE=MULTIPLY=NORMAL=NORMALIZED=NO_DEPTH_TEST=NTSC=ONE=OPAQUE=OPEN=OPENGL=ORTHOGRAPHIC=OVERLAY=P2D=P3D=PAL=PDF=PERSPECTIVE=PI=PIXEL_CENTER=POINT=POINTS=POSTERIZE=PROBLEM=PROJECT=QUADS=QUAD_STRIP=QUARTER_PI=RADIANS=RADIUS=RAD_TO_DEG=RED_MASK=REPLACE=RETURN=RGB=RIGHT=ROUND=SCREEN=SECAM=SHIFT=SOFT_LIGHT=SPECULAR=SQUARE=SUBTRACT=SVIDEO=TAB=TARGA=TEXT=TFF=THIRD_PI=THRESHOLD=TIFF=TOP=TRIANGLES=TRIANGLE_FAN=TRIANGLE_STRIP=TUNER=TWO=TWO_PI=UP=
     WAIT=WHITESPACE=XML=ArrayList=BufferedReader=Character=HashMap=Integer=PFont=PGraphics=PImage=PShader=PShape=PVector=PrintWriter=StringBuffer=abs=acos=addChild=alpha=ambient=ambientLight=append=applyMatrix=arc=asin=atan=atan2=background=beginCamera=beginContour=beginRaw=beginRecord=beginShape=bezier=bezierDetail=bezierPoint=bezierTangent=bezierVertex=binary=bind=blend=blendColor=blendMode=blue=box=breakShape=brightness=cache=camera=ceil=clip=color=colorMode=concat=constrain=copy=cos=createFont=createGraphics=
@@ -27,17 +27,39 @@ SketchStatementscomments = (function() {
     function(){return a.width})};
 
 
+  var draw_target;
 
-  SketchStatementscomments.name = 'SketchStatementscomments';
+  SketchFunctions.name = 'SketchFunctions';
 
-  function SketchStatementscomments() {}
+  function SketchFunctions() {}
 
-  SketchStatementscomments.prototype.setup = function() {
+  SketchFunctions.prototype.setup = function() {
     (function(processing){injectProcessingApi(processing);size=function csModeApiInjectIffy (){processing.size.apply(processing,arguments);injectProcessingApi(processing);}})(this);
     size(200, 200);
-    return background(255);
+    background(51);
+    noStroke();
+    smooth();
+    return noLoop();
   };
 
-  return SketchStatementscomments;
+  SketchFunctions.prototype.draw = function() {
+    draw_target(68, 34, 200, 10);
+    draw_target(152, 16, 100, 3);
+    return draw_target(100, 144, 80, 5);
+  };
+
+  draw_target = function(xloc, yloc, size, num) {
+    var grayvalues, i, steps, _i, _results;
+    grayvalues = 255 / num;
+    steps = size / num;
+    _results = [];
+    for (i = _i = 0; 0 <= num ? _i < num : _i > num; i = 0 <= num ? ++_i : --_i) {
+      fill(i, grayvalues);
+      _results.push(ellipse(xloc, yloc, size - i * steps, size - i * steps));
+    }
+    return _results;
+  };
+
+  return SketchFunctions;
 
 })();
