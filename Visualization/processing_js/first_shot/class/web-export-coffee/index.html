@@ -33,7 +33,7 @@
 		canvas { display: block; outline: 0px; margin-bottom: 1.5em; }
 		#content { 
 			margin: 50px auto 0px auto; padding: 25px 25px 15px 25px;
-			width: 200px; min-width: 300px; overflow: auto;
+			width: 640px; min-width: 300px; overflow: auto;
 			border-left: 1px solid #444; border-top: 1px solid #444; 
 			border-right: 1px solid #333; border-bottom: 1px solid #333;
 			background-color: #3d3d3d;
@@ -51,7 +51,7 @@
 		<div id="content">
 			<div>
 				<canvas id="class" 
-						width="200" height="200">
+						width="640" height="360">
 					<p>Your browser does not support the canvas tag.</p>
 					<!-- Note: you can put any alternative content here. -->
 				</canvas>
@@ -61,7 +61,7 @@
 	    	</div>
 			<h1>class</h1>
 	    	<p id="description"></p>
-			<p id="sources">Source code: <a href="class.pde">class</a> </p>
+			<p id="sources">Source code: <a href="class.pde">class</a> <a href="myRect.pde">myRect</a> </p>
 			<p id="">
 			Written in <a href="http://coffeescript.org/" title="CoffeeScript">CoffeeScript</a> 
 			on <a href="http://processing.org" title="Processing">Processing</a>
@@ -70,25 +70,41 @@
 		</div>
 		<script type="text/coffeescript-processing">
 class SketchClass
-    #All Examples Written by Casey Reas and Ben Fry
     setup: ->
         "Processing API injection iffy goes here";
-        size 200, 200
-        background 51
+        
+        size 640, 360
+        fill 255, 204
         noStroke()
-        smooth()
-        noLoop()
-    draw: ->
-        draw_target 68, 34, 200, 10
-        draw_target 152, 16, 100, 3
-        draw_target 100, 144, 80, 5
+        
+        @r1 = new MRect 1, 134.0, 0.532,  0.1*height, 10.0, 60.0
+        @r2 = new MRect 2, 44.0,  0.166,  0.3*height, 5.0,  50.0
+        @r3 = new MRect 2, 58.0,  0.332,  0.4*height, 10.0, 35.0
+        @r4 = new MRect 1, 120.0, 0.0498, 0.9*height, 15.0, 60.0
     
-    draw_target = (xloc, yloc, size, num) ->
-        grayvalues = 255/num
-        steps = size/num
-        for i in [0...num]
-            fill i, grayvalues
-            ellipse xloc, yloc, size-i*steps, size-i*steps
+    draw: ->
+        
+        background 0
+        
+        @r1.display()
+        @r2.display()
+        @r3.display()
+        @r4.display()
+     
+        @r1.move  mouseX-(width/2),            mouseY+(height*0.1),   30
+        @r2.move (mouseX+(width*0.05))%width, mouseY+(height*0.025), 20
+        @r3.move  mouseX/4,                     mouseY-(height*0.025), 40
+        @r4.move  mouseX-(width/2),           (height-mouseY),        50
+    class MRect
+        constructor: ( @w, @xpos, @h, @ypos, @d, @t ) ->
+        move: ( posX, posY, damping ) ->
+            dif = @ypos - posY
+            @ypos -= dif/damping if abs(dif) > 1
+            dif = @xpos - posX
+            @xpos -= dif/damping if abs(dif) > 1
+        display: ->
+            for i in [0...@t]
+                rect @xpos+(i*(@d+@w)), @ypos, @w, height*@h
 
 </script>
 		

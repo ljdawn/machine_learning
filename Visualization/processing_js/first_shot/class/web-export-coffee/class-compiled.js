@@ -27,7 +27,7 @@ SketchClass = (function() {
     function(){return a.width})};
 
 
-  var draw_target;
+  var MRect;
 
   SketchClass.name = 'SketchClass';
 
@@ -35,30 +35,64 @@ SketchClass = (function() {
 
   SketchClass.prototype.setup = function() {
     (function(processing){injectProcessingApi(processing);size=function csModeApiInjectIffy (){processing.size.apply(processing,arguments);injectProcessingApi(processing);}})(this);
-    size(200, 200);
-    background(51);
+    size(640, 360);
+    fill(255, 204);
     noStroke();
-    smooth();
-    return noLoop();
+    this.r1 = new MRect(1, 134.0, 0.532, 0.1 * height, 10.0, 60.0);
+    this.r2 = new MRect(2, 44.0, 0.166, 0.3 * height, 5.0, 50.0);
+    this.r3 = new MRect(2, 58.0, 0.332, 0.4 * height, 10.0, 35.0);
+    return this.r4 = new MRect(1, 120.0, 0.0498, 0.9 * height, 15.0, 60.0);
   };
 
   SketchClass.prototype.draw = function() {
-    draw_target(68, 34, 200, 10);
-    draw_target(152, 16, 100, 3);
-    return draw_target(100, 144, 80, 5);
+    background(0);
+    this.r1.display();
+    this.r2.display();
+    this.r3.display();
+    this.r4.display();
+    this.r1.move(mouseX - (width / 2), mouseY + (height * 0.1), 30);
+    this.r2.move((mouseX + (width * 0.05)) % width, mouseY + (height * 0.025), 20);
+    this.r3.move(mouseX / 4, mouseY - (height * 0.025), 40);
+    return this.r4.move(mouseX - (width / 2), height - mouseY, 50);
   };
 
-  draw_target = function(xloc, yloc, size, num) {
-    var grayvalues, i, steps, _i, _results;
-    grayvalues = 255 / num;
-    steps = size / num;
-    _results = [];
-    for (i = _i = 0; 0 <= num ? _i < num : _i > num; i = 0 <= num ? ++_i : --_i) {
-      fill(i, grayvalues);
-      _results.push(ellipse(xloc, yloc, size - i * steps, size - i * steps));
+  MRect = (function() {
+
+    MRect.name = 'MRect';
+
+    function MRect(w, xpos, h, ypos, d, t) {
+      this.w = w;
+      this.xpos = xpos;
+      this.h = h;
+      this.ypos = ypos;
+      this.d = d;
+      this.t = t;
     }
-    return _results;
-  };
+
+    MRect.prototype.move = function(posX, posY, damping) {
+      var dif;
+      dif = this.ypos - posY;
+      if (abs(dif) > 1) {
+        this.ypos -= dif / damping;
+      }
+      dif = this.xpos - posX;
+      if (abs(dif) > 1) {
+        return this.xpos -= dif / damping;
+      }
+    };
+
+    MRect.prototype.display = function() {
+      var i, _i, _ref, _results;
+      _results = [];
+      for (i = _i = 0, _ref = this.t; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
+        _results.push(rect(this.xpos + (i * (this.d + this.w)), this.ypos, this.w, height * this.h));
+      }
+      return _results;
+    };
+
+    return MRect;
+
+  })();
 
   return SketchClass;
 
