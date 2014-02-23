@@ -1,22 +1,20 @@
 #Bouncy Bubbles  
 #based on code from Keith Peters. 
 #Multiple-object collision.
-#coffee script ver0.1
-#2014.2.24 xuanzhang
-#with x->friction
+#coffee script ver
+#2014.2.23 xuanzhang
 setup: ->
   size 600, 600
   fill 0
   noStroke()
-  @ball_num = 10
-  @spring = 0.5
+  @spring = 0.05
   @brr = []
-  for i in [0...@ball_num]
-    @brr.push new Ball(width/2-i*100, (height/2)+i*50, i*2+50)
+  for i in [0...2]
+    @brr.push new Ball(width/2-i*100, (height/2)+i*50, 50)
 draw: ->
   background 0
-  for ball in [0...@ball_num]
-    for ith in [ball+1...@ball_num]
+  for ball in [0...2]
+    for ith in [ball+1...2]
       @dx = @brr[ith].xpos - @brr[ball].xpos
       @dy = @brr[ith].ypos - @brr[ball].ypos
       @dist = sqrt(@dx*@dx + @dy*@dy)
