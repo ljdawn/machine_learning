@@ -1,7 +1,0 @@
-library(ggplot2)
-Prob = read.csv("prob_by_times", header = TRUE, sep = "\t")
-Prob_r = read.csv("prob_by_rates", header = TRUE, sep = "\t")
-p <- ggplot(Prob, aes(x = times, y = suc)) 
-p + geom_histogram() + labs(title = "kb process") + xlab("kb times") + ylab("sucess times")
-pr <- ggplot(Prob_r, aes(x = times, y = suc)) 
-pr + geom_point() + labs(title = "kb process") + xlab("kb times") + ylab("sucess rate") + expand_limits(y = c(0.0, 1.0))
