@@ -7,7 +7,7 @@ working with numpy, pandas, scikit-learn
 """
 __author__ = """\n""".join(['Xuan Zhang'])
 
-__version__ = """2013-02-18"""
+__version__ = """2013-02-25"""
 
 __all__ = ['']
 
@@ -229,6 +229,20 @@ def my_binarizer(*args):
 	binarizer = preprocessing.Binarizer(threshold)
 	return binarizer.transform(np.array(args[0]))
 
+def column_interchange(dataframe_ori, dataframe_new):
+	"""df of ori file, df of column_to_interchange"""
+	import pandas as pd
+	import numpy as np
+	inter_change_key = [key for key in dataframe_ori if key in dataframe_new]
+	ori_remain_key = [key for key in dataframe_ori if key not in inter_change_key]
+	new_matrix = np.vstack((np.array(dataframe_ori[ori_remain_key]).T, np.array(dataframe_new[inter_change_key]).T)).T 
+	new_df = pd.DataFrame(new_matrix, columns = ori_remain_key + inter_change_key)
+	return new_df[dataframe_ori.keys()].values
+
 if __name__ == '__main__':
-	pass
+	import pandas as pd	 
+	a = pd.DataFrame({'a':[1,2,3],'b':[1,2,3],'c':[1,2,3],'d':[1,2,3]})
+	b = pd.DataFrame({'b':[3,2,1],'d':[3,2,1]})
+	print column_interchange(a, b)
+	#pass
 
