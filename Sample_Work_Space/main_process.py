@@ -15,7 +15,6 @@ __author__ = """\n""".join(['Xuan Zhang'])
 __version__ ="""2013-02-19"""
 
 __all__ = ['']
-
 #coding:utf8
 from tool_box import Step_Zero_Processing_v07 as SZ
 from tool_box import Step_Three_ClassificationReport as ST
@@ -52,9 +51,9 @@ my_FS = SO.my_FS
 
 #---missing values strategy
 imp = Imputer(missing_values='NaN', strategy='mean', axis=0)
-#If “mean”, then replace missing values using the mean along the axis.
-#If “median”, then replace missing values using the median along the axis.
-#If “most_frequent”, then replace missing using the most frequent value along the axis.
+#If "mean", then replace missing values using the mean along the axis.
+#If "median", then replace missing values using the median along the axis.
+#If "most_frequent", then replace missing using the most frequent value along the axis.
 
 #---main functions---
 def get_list(fn):
