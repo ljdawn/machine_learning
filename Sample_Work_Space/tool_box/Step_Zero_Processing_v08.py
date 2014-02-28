@@ -30,21 +30,34 @@ def scale_value_list(data_matrix, mode = 0):
     return model.transform(target)
 
 def my_binarizer(data_matrix, threshold):
-    from sklearn import preprocessing
     import numpy as np
+    from sklearn import preprocessing
     binarizer = preprocessing.Binarizer(threshold)
     return binarizer.transform(np.array(data_matrix))
 
 def scale_binar_list(data_matrix, binar_thr_list = None):
     import numpy as np
-    if binar_thr_list is None:
-        binar_thr_list = line:np.array(line).mean() for line in data_matrix
+    if binar_thr_list is None: binar_thr_list = [line.mean() for line in np.array(data_matrix).T]
+    return my_binarizer(data_matrix, binar_thr_list)
+
+def scale_discret_list(data_matrix):
+    import numpy as np
+    from sklearn import preprocessing
+    matrix_catalog_converter = preprocessing.OneHotEncoder()
+    print data_matrix.keys()[0]
+    target = [map(float, x) for x in np.array(data_matrix)]
+    model = matrix_catalog_converter.fit(target)
+    return model.transform(target).toarray()
 
 if __name__ == '__main__':
     import numpy as np
     data = [[1, 2, 3, 13], [4, 5, 6, 7], [7, 8, 9, 13], [10, 11, 12, 14]]
     data_title = ['a', 'b', 'c', 'd']
     #a = pd.DataFrame({'a':[1, 2, 3], 'b':[1, 2, 3], 'c':[1, 2, 3], 'd':[1, 2, 3]})
-    test = split_data_matrix(data, data_title,['a', 'c'], ['c', 'd'])
+    test = split_data_matrix(data, data_title, value_list = ['a', 'c'], binar_list = ['b'], discret_list = ['c', 'd'])
     a = scale_value_list(test.next(), 1)
+    b = scale_binar_list(test.next(), [1])
+    c = scale_discret_list(test.next())
     print a
+    print b
+    print c
