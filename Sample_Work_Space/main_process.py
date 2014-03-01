@@ -56,23 +56,17 @@ imp = Imputer(missing_values = 'NaN', strategy = 'mean', axis = 0)
 def main_pandas(column_list_fn_ori, column_list_fn_new, column_to_use_fn, data_file, to_test, discret_list, binar_list, binar_thr_list, stand_flag = 0, p = 0.05):
 	#---process start---
 	column_label_ori = get_list(column_list_fn_ori)
-	logging.debug(column_label_ori)
 	column_label_new = get_list(column_list_fn_new)
-	logging.debug(column_label_new)
 	column_num_new = column_get_label_num(column_label_ori, column_label_new)
-	logging.debug(column_num_new)
 	data_matrix_tr = get_table(data_file, column_label_ori)
 	data_matrix_te = get_table(to_test, column_label_ori)
 	data_matrix = pd.concat([data_matrix_tr, data_matrix_te])
 	column_to_use_list = get_list(column_to_use_fn)
-	logging.debug(column_to_use_list)
 	column_new_list = get_new_list(column_label_new, column_to_use_list)
-	logging.debug(column_new_list)
 	data_matrix_m = data_matrix[column_label_new]
 	data_matrix_eff = data_matrix_m[column_new_list].values
 	#data_matrix_eff_float = [map(lambda x:float(x) if not math.isnan(x) else 0, line) for line in data_matrix_eff.tolist()]
 	data_matrix_eff_float = imp.fit(data_matrix_eff).transform(data_matrix_eff)
-	logging.debug(data_matrix_eff)
 	#<<step 2 -- preprossing data_matrix-- >>
 	#def column type
 	(X, process_summary) = preprocess(data_matrix_eff_float, data_matrix_test = data_matrix_te, test_flag = False, stand_flag = stand_flag, discret_list = discret_list, binar_list = binar_list)
