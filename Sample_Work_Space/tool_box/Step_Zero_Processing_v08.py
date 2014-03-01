@@ -111,8 +111,8 @@ if __name__ == '__main__':
     data = [[1, 2, 3, 13], [4, 5, 6, 7], [7, 8, 9, 13], [10, 11, 12, 14]]
     data_title = ['a', 'b', 'c', 'd']
 
-    cProfile.run("get_data_matrix(data_matrix = data, colnames = data_title, value_list = ['a', 'c'], discret_list = ['c', 'd'])", "res")
-    p = pstats.Stats("res")
+    cProfile.run("get_data_matrix(data_matrix = data, colnames = data_title, value_list = ['a', 'c'], discret_list = ['c', 'd'])", "../profile/res")
+    p = pstats.Stats("../profile/res")
     p.sort_stats("time").print_stats()
     #data_preed = get_data_matrix(data_matrix = data, colnames = data_title, value_list = ['a', 'c'], discret_list = ['c', 'd'])
     #print data_preed
