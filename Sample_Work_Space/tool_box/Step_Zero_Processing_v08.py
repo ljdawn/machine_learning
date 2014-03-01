@@ -11,6 +11,7 @@ __version__ = """2013-02-28"""
 
 __all__ = ['']
 
+
 #coding:utf8
 def split_data_matrix(data_matrix, colnames = None, value_list = None, binar_list = None, discret_list = None):
     import pandas as pd
@@ -42,12 +43,17 @@ def scale_binar_list(data_matrix, binar_thr_list = None):
 
 def scale_discret_list(data_matrix):
     import numpy as np
+    import pandas as pd
+    import itertools
     from sklearn import preprocessing
     matrix_catalog_converter = preprocessing.OneHotEncoder()
-    print data_matrix.keys()[0]
+    counter = itertools.count(0)
+    title_ele = iter([[(x, ele) for ele in data_matrix[x].values] for x in data_matrix.keys()])
+    title_ele_set = []
+    [[title_ele_set.append(si_title) for si_title in title_line if si_title not in title_ele_set] for title_line in title_ele]
     target = [map(float, x) for x in np.array(data_matrix)]
     model = matrix_catalog_converter.fit(target)
-    return model.transform(target).toarray()
+    return pd.DataFrame(model.transform(target).toarray(), columns = title_ele_set)
 
 if __name__ == '__main__':
     import numpy as np
