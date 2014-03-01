@@ -102,20 +102,47 @@ def column_interchange(dataframe_ori, dataframe_new):
     new_df = pd.DataFrame(new_matrix, columns = ori_remain_key + inter_change_key)
     return new_df[dataframe_ori.keys()].values
 
+def get_list(fn):
+    with open(fn) as column_list_f:
+        return map(lambda x:x.strip(), column_list_f.readlines())
+
+def get_new_list(base, filter_):
+    return map(lambda (x, y):x, filter(lambda (x, y):y in filter_, [(x, y) for (x,y) in enumerate(base)]))
+
+def get_data_matrix(fn, sep = '\t'):
+    res = []
+    with open(fn) as mat:
+        return map(lambda x:x.strip().split(sep), mat.readlines())
+
+def get_new_label(colum_label_dict, filter_):
+    return [colum_label_dict[x] for x in filter_]
+
+def get_One_col(fn, col = -1):
+    with open(fn) as column_One:
+        return map(lambda x:x.strip()[col], column_One.readlines())
+def timer(s = ''):
+    print str(datetime.now()), '>>', s
+
+def get_table(fn, column_name_list = [], sep = '\t'):
+    target = pd.read_table(fn, names = column_name_list, sep = sep)
+    return target
+
 if __name__ == '__main__':
     import warnings
     import numpy as np
     import pandas as pd
     import cProfile, pstats
+    import logging
     warnings.filterwarnings("ignore", category=DeprecationWarning, module="pandas", lineno=570)
+    
     data = [[1, 2, 3, 13], [4, 5, 6, 7], [7, 8, 9, 13], [10, 11, 12, 14]]
     data_title = ['a', 'b', 'c', 'd']
 
     cProfile.run("get_data_matrix(data_matrix = data, colnames = data_title, value_list = ['a', 'c'], discret_list = ['c', 'd'])", "../profile/res")
     p = pstats.Stats("../profile/res")
     p.sort_stats("time").print_stats()
-    #data_preed = get_data_matrix(data_matrix = data, colnames = data_title, value_list = ['a', 'c'], discret_list = ['c', 'd'])
-    #print data_preed
+    data_preed = get_data_matrix(data_matrix = data, colnames = data_title, value_list = ['a', 'c'], discret_list = ['c', 'd'])
+    print data_preed
 
 
 
