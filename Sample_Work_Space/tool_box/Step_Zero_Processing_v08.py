@@ -57,7 +57,7 @@ def scale_discret_list(data_matrix):
     model = matrix_catalog_converter.fit(target)
     return pd.DataFrame(model.transform(target).toarray(), columns = title_ele_set)
 
-def get_data_matrix(data_matrix, colnames = None, value_list = None, mode = 0, binar_list = None, discret_list = None, binar_thr_list = None):
+def get_prepared_data_matrix(data_matrix, colnames = None, value_list = None, mode = 0, binar_list = None, discret_list = None, binar_thr_list = None):
     import itertools
     discriminant = [1 if func is not None else 0 for func in (value_list, binar_list, discret_list)]
     target = split_data_matrix(data_matrix, colnames, value_list, binar_list, discret_list)
@@ -138,10 +138,10 @@ if __name__ == '__main__':
     data = [[1, 2, 3, 13], [4, 5, 6, 7], [7, 8, 9, 13], [10, 11, 12, 14]]
     data_title = ['a', 'b', 'c', 'd']
 
-    cProfile.run("get_data_matrix(data_matrix = data, colnames = data_title, value_list = ['a', 'c'], discret_list = ['c', 'd'])", "../profile/res")
-    p = pstats.Stats("../profile/res")
-    p.sort_stats("time").print_stats()
-    data_preed = get_data_matrix(data_matrix = data, colnames = data_title, value_list = ['a', 'c'], discret_list = ['c', 'd'])
+    #cProfile.run("get_prepared_data_matrix(data_matrix = data, colnames = data_title, value_list = ['a', 'c'], discret_list = ['c', 'd'])", "../profile/res")
+    #p = pstats.Stats("../profile/res")
+    #p.sort_stats("time").print_stats()
+    data_preed = get_prepared_data_matrix(data_matrix = data, colnames = data_title, value_list = ['a', 'c'], discret_list = ['c', 'd'])
     print data_preed
 
 
