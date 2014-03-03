@@ -57,6 +57,7 @@ def scale_discret_list(data_matrix):
     model = matrix_catalog_converter.fit(target)
     return pd.DataFrame(model.transform(target).toarray(), columns = title_ele_set)
 
+#preprocess
 def get_prepared_data_matrix(data_matrix, colnames = None, value_list = None, mode = 0, binar_list = None, discret_list = None, binar_thr_list = None):
     import itertools
     discriminant = [1 if func is not None else 0 for func in (value_list, binar_list, discret_list)]
