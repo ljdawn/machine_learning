@@ -11,6 +11,8 @@
 	"grid_search_parameter" : {"penalty":["l1", "l2"],"C":[1, 10, 100]},
 	"logstic_threshold" : 0.5,
 	"P" : 10.05,
+	"model_saving_path" : "model/model",
+    "feature_saving_path" : "model/feature",
 	"model_detailed" : 
 		{
 			"1" : 
@@ -44,6 +46,7 @@
 				{"column_to_use_fn" : "config/f_4_af", 
 				"data_file" : "data/wt_sample_4_201208.txt", 
 				"data_file_test" : "data/wt_sample_4_201208.txt", 
+				"data_file_to_predict" : "data/wt_sample_4_201209.txt",
 				"discret_list" : "config/f_4_af_dis", 
 				"binar_list" : [], 
 				"binar_thr_list" : []

@@ -49,13 +49,13 @@ def scale_discret_list(data_matrix):
     import itertools
     from sklearn import preprocessing
     matrix_catalog_converter = preprocessing.OneHotEncoder()
-    counter = itertools.count(0)
     title_ele = iter([[(x, ele) for ele in data_matrix[x].values] for x in data_matrix.keys()])
     title_ele_set = []
     [[title_ele_set.append(si_title) for si_title in title_line if si_title not in title_ele_set] for title_line in title_ele]
     target = [map(float, x) for x in np.array(data_matrix)]
-    model = matrix_catalog_converter.fit(target)
-    return pd.DataFrame(model.transform(target).toarray(), columns = title_ele_set)
+    discret_adjust = np.array(target).min()
+    model = matrix_catalog_converter.fit(target - discret_adjust)
+    return pd.DataFrame(model.transform(target - discret_adjust).toarray(), columns = title_ele_set)
 
 #preprocess
 def get_prepared_data_matrix(data_matrix, colnames = None, value_list = None, mode = 0, binar_list = None, discret_list = None, binar_thr_list = None):
@@ -125,6 +125,7 @@ def timer(s = ''):
     print str(datetime.now()), '>>', s
 
 def get_table(fn, column_name_list = [], sep = '\t'):
+    import pandas as pd
     target = pd.read_table(fn, names = column_name_list, sep = sep)
     return target
 

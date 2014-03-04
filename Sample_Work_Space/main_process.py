@@ -38,23 +38,39 @@ import logging
 get_data_matrix = SZ.get_data_matrix
 get_list = SZ.get_list
 get_prepared_data_matrix = SZ.get_prepared_data_matrix
+get_One_col = SZ.get_One_col
+column_picker = SZ.column_picker
+my_FS = SO.my_FS
 
-def training_process(set_up):
+def process(set_up, predict_flag = 0):
     import pandas as pd
     import numpy as np
+    import cPickle as pickle
     imp = Imputer(missing_values = 'NaN', strategy = 'most_frequent', axis = 0)
     setup = json.load(file(set_up))
     ori_col_names = get_list(setup['column_list_fn_ori'])
     mode = setup['model_flag']
-    data_file = get_data_matrix(setup['model_detailed'][mode]['data_file'])
+    data_file_tr = np.array(get_data_matrix(setup['model_detailed'][mode]['data_file']))
+    data_file_te = np.array(get_data_matrix(setup['model_detailed'][mode]['data_file_test']))
+    data_file = np.vstack([data_file_tr, data_file_te])
     discret_col = get_list(setup['model_detailed'][mode]['discret_list'])
     col_to_use = get_list(setup['model_detailed'][mode]['column_to_use_fn'])
     value_list = [colname for colname in col_to_use if colname not in discret_col]
     data_matrix = np.array(pd.DataFrame(data_file, columns = ori_col_names)[col_to_use].values)
-    data_matrix = [map(lambda ele:float(ele) if ele != 'NULL'  else 0.0, line) for line in data_matrix]
-    #data_matrix = imp.fit(data_matrix).transform(data_matrix)
+    data_matrix = [map(lambda ele:float(ele) if ele != 'NULL'  else -1.0, line) for line in data_matrix]
+    data_matrix = imp.fit(data_matrix).transform(data_matrix)
     prepared_data = get_prepared_data_matrix(data_matrix, col_to_use, value_list = value_list, discret_list = discret_col)
-    #print prepared_data
+    X, X_ = prepared_data.values[:len(data_file_tr)], prepared_data[len(data_file_tr):]
+    y = np.array(map(float, get_One_col(setup['model_detailed'][mode]['data_file'])))
+    X_F = X - X.min()
+    X_X_filter = my_FS(X_F, y)[1]
+    feature_index = range(len(X_X_filter))
+    feature_selected_index = list(itertools.compress(feature_index, map(lambda x:x < float(setup['P']), X_X_filter)))
+    X_selected = column_picker(X, feature_selected_index)
+    X_totest = column_picker(X_, feature_selected_index)
+    feature_selected_label = np.array(prepared_data.keys())[feature_selected_index]
+    pickle.dump(feature_selected_label, open(setup['feature_saving_path'], 'w'))
+    return (pd.DataFrame(X_selected, columns = feature_selected_label), pd.DataFrame(X_totest, columns = feature_selected_label))
 
 if __name__ == '__main__':
-    training_process('json/setup.json')
+    process('json/setup.json')
