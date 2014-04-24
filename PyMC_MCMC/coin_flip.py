@@ -16,6 +16,7 @@ for k, N in enumerate(n_trials):
 	plt.setp(sx.get_yticklabels(), visible=False)
 	heads = data[:N].sum()
 	y = dist.pdf(x, 1 + heads, 1 + N - heads)
+	#y = dist.pdf(x, 1, 1)
 	plt.plot(x, y, label="observe %d tosses,\n %d heads" % (N, heads))
 	plt.fill_between(x, 0, y, color="#348ABD", alpha=0.4)
 	plt.vlines(0.5, 0, 4, color="k", linestyles="--", lw=1)
