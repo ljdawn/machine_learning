@@ -32,3 +32,4 @@ for k, N in enumerate(n_trials):
 plt.suptitle("Bayesian updating of posterior probabilities", y=1.02, fontsize=14)
 plt.tight_layout()
 plt.show()
+#tesst
