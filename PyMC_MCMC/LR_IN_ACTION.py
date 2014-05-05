@@ -3,6 +3,7 @@ import scipy as sp
 import math
 import json
 import matplotlib
+import pymc as pm
 from IPython.core.pylabtools import figsize
 from matplotlib import pyplot as plt
 from sklearn.linear_model import SGDClassifier
@@ -20,7 +21,7 @@ def show_data(da):
 	return plt
 
 def sigmoid(x):
-	return 1.0/(1+math.exp(-x))
+	return 1.0/(1+np.exp(-x))
 
 def GD(x, y, alpha = 0.001, numIterations = 1000):
 	x = x - x.mean()
@@ -32,29 +33,41 @@ def GD(x, y, alpha = 0.001, numIterations = 1000):
 		loss = hypothesis - y
 		gradient = np.dot(x, loss) / m
 		theta = theta - alpha * gradient
-	#y_ = map(sigmoid, (x*theta))
-	#for i in xrange(len(y_)):
-	#	print y[i],
-	#	print 1.0 if y_[i] >= 0.29 else 0.0
 	return theta
 
-def SGD():
-	pass
+def MCMC(x, y):
+	x = x - x.mean()
+	beta = pm.Uniform("beta", -1, 1)
 
-def MCMC():
-	pass
+	@pm.deterministic
+	def p(t=x, beta=beta):
+		return 1.0 / (1. + np.exp(-t*beta))
+
+	observed = pm.Bernoulli("bernoulli_obs", p, value=y, observed=True)
+	model = pm.Model([observed, beta])
+
+	map_ = pm.MAP(model)
+	map_.fit()
+	mcmc = pm.MCMC(model)
+	mcmc.sample(120000, 100000, 2)
+
+	beta_samples = mcmc.trace('beta')[:, None]
+
+	figsize(12.5, 6)
+
+	plt.plot()
+	plt.hist(beta_samples, histtype='stepfilled', bins=35, alpha=0.85, color="#7A68A6", normed=True)
+	plt.legend()
+	plt.show()
 
 def main():
 	da = load_data()
 	#pic_1 = show_data(da)
 	#pic_1.show()
+	print da
 	theta = GD(da[:, 0], da[:, 1])
 	print theta
-	x = np.linspace(50, 85, 36)
-	x = x - x.mean()
-	y = map(sigmoid,(x*theta))
-	plt.plot(x, y)
-	plt.show()
+	MCMC(da[:, 0], da[:, 1])
 
 if __name__ == '__main__':
 	main()
