@@ -56,7 +56,7 @@ def MCMC(x, y):
 	figsize(12.5, 6)
 
 	plt.plot()
-	plt.hist(beta_samples, histtype='stepfilled', bins=35, alpha=0.85, color="#7A68A6", normed=True)
+	plt.hist(beta_samples, histtype='stepfilled', bins=35, alpha=0.85,label=r"beta", color="#7A68A6", normed=True)
 	plt.legend()
 	plt.show()
 
