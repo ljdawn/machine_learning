@@ -1,30 +1,40 @@
-from math import *
-from matplotlib.pylab import *
+from scipy.stats import norm
+from matplotlib import pyplot as plt
 import matplotlib
 import json
+import numpy as np
 
 s = json.load(open("style/bmh_matplotlibrc.json"))
 matplotlib.rcParams.update(s)
 
+def simple_gibbs(niter = 50, rho = 0.99):
+	mean1, mean2  = 10, 20
+	std1, std2 = 1, 1
+	sd =np.sqrt(1 - pow(rho, 2))
+	x, y = 0.0, 0.0
+	for i in xrange(niter):
+		x = norm.rvs(mean1 + rho*(y - mean2)/std2, std1*sd)
+		y = norm.rvs(mean2 + rho*(x - mean1)/std1, std2*sd)
+		yield (x,y)
 
-n=10000
-rho=0.79 #correlation
-#Means
-m1 = 10
-m2 = 20
-#Standard deviations
-s1 = 1
-s2 = 2
-#Initialize vectors
-x=zeros(n, float)
-y=zeros(n, float)
-sd=sqrt(1-rho**2)
-# the core of the method: sample recursively from two normal distributions
-# Tthe mean for the current sample, is updated at each step.
-for i in range(1,n):
-  x[i] = normal(m1+rho*(y[i-1]-m2)/s2,s1*sd)
-  y[i] = normal(m2+rho*(x[i]-m1)/s1,s2*sd)
+def main():
+	n = 10000
+	r = 0.99
+	x = []
+	y = []
+	arr = simple_gibbs(n, r)
+	for i  in xrange(n):
+		data = arr.next()
+		x.append(data[0])
+		y.append(data[1])
 
-scatter(x,y,marker='d',c='r')
+	plt.scatter(x, y, color="#348ABD", alpha=0.85)
+	plt.show()
 
-show()
+if __name__ == '__main__':
+	main()
+
+
+
+
+
