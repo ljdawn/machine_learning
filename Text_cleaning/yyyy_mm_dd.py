@@ -25,10 +25,11 @@ def find_datatime_in_string(text):
 
 def main():
 	text = 'zhognguo工商局 2651 ewf 1985-89-98 fafe//,dlmcv a2014 02_29 ae f a 2000-02-291922 02-02'
+	text = 'afwef 1922-12-32  1981 01 01 www.baidu.com ]]'
 	print 'input text :', text
-	print 'we have found :',
+	print 'we have found datatime :',
 
-	print [datatime for datatime in find_datatime_in_string(text)]
+	print ' '.join([datatime for datatime in find_datatime_in_string(text)])
 
 if __name__ == '__main__':
 	main()
