@@ -11,7 +11,7 @@ def find_datatime_in_string(text):
 		if (year % 4 == 0 and year % 100 != 0) or (year % 400 == 0):
 			leap_year.append(str(year))
 	rule_4_h = '|'.join(leap_year)
-	rule_4 = 'rule_4_h'+'([-\/\._ ])(0?2)([-\/\._ ])(29)$'
+	rule_4 = '('+rule_4_h+')([-\/\._ ])(0?2)([-\/\._ ])(29)$'
 	rule = re.compile(rule_1+'|'+rule_2+'|'+rule_3+'|'+rule_4)
 	rule_0 = re.compile('\d{4}[-\/\._ ]\d{2}[-\/\._ ]\d{2}')
 	ans = []
@@ -24,7 +24,7 @@ def find_datatime_in_string(text):
 
 def main():
 	text = 'zhognguo工商局 2651 ewf 1985-89-98 fafe//,dlmcv a2014 02_29 ae f a 2000-02-291922 02-02'
-	text = 'afwef 1922-12-32  1981 01 01 www.baidu.com ]]'
+	#text = 'afwef 1922-12-32  1981 01 01 www.baidu.com ]]'
 	print 'input text :', text
 	print 'we have found datatime :',
 
