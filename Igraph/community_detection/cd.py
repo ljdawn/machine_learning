@@ -1,11 +1,16 @@
 import igraph as ig
-G = ig.Graph.Read_Edgelist('edlist')
-p = ig.Graph.pagerank(G)
+import networkx as nx
 
-for vid, pr in enumerate(p):
-        print vid, pr
+G = nx.gnm_random_graph(100, 200, seed=1)
 
-c = ig.Graph.community_label_propagation(G)
+GI = ig.Graph()
+GI.add_vertices(G.nodes())
+GI.add_edges(G.edges())
 
-for item in c:
+p = ig.Graph.pagerank(GI)
+
+c = ig.Graph.community_label_propagation(GI)
+c1 = ig.Graph.community_multilevel(GI)
+
+for item in c1:
 	print item
