@@ -8,7 +8,7 @@ import math
 s = json.load(open("style/bmh_matplotlibrc.json"))
 matplotlib.rcParams.update(s)
 
-def simple_gibbs(niter = 50, rho = 0.99):
+def simple_gibbs(niter = 50, rho = 0.7):
 	mean1, mean2  = 10, 20
 	std1, std2 = 1, 1
 	sd =np.sqrt(1 - pow(rho, 2))
@@ -46,15 +46,15 @@ def main():
 	r = 0.99
 	x = []
 	y = []
-	#arr = simple_gibbs(n, r)
-	#for data in arr:
-	#	da = arr.next()
-	#	x.append(da[0])
-	#	y.append(da[1])
+	arr = simple_gibbs(n, r)
+	for data in arr:
+		da = arr.next()
+		x.append(da[0])
+		y.append(da[1])
 
-	#plt.subplot(2,1,1)
-	#plt.scatter(x, y, color="#348ABD", alpha=0.85)
-	#plt.show()
+	plt.plot()
+	plt.scatter(x, y, color="#348ABD", alpha=0.85)
+	plt.show()
 	#print bivariate_norm_pdf(10000,100000)
 
 	#b = simple_MH(n)
