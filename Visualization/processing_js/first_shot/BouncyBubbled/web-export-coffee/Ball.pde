@@ -3,7 +3,7 @@ class Ball
     constructor: ( @xpos, @ypos, @diamter ) ->
         @fri = -0.5
         @fur = 0.9
-        @g = 0.1
+        @g = 0.2
         @vx = 5
         @vy = 1
     collide: (@ax, @ay) ->

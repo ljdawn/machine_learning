@@ -1,6 +1,6 @@
-var SketchBouncybubbled;
+var SketchBouncybubbledbasic;
 
-SketchBouncybubbled = (function() {
+SketchBouncybubbledbasic = (function() {
   var ADD=ALIGN_CENTER=ALIGN_LEFT=ALIGN_RIGHT=ALPHA=ALPHA_MASK=ALT=AMBIENT=ARGB=ARROW=BACKSPACE=BASELINE=BEVEL=BLEND=BLUE_MASK=BLUR=BOTTOM=BURN=CENTER=CHATTER=CLOSE=CMYK=CODED=COMPLAINT=COMPONENT=COMPOSITE=CONCAVE_POLYGON=CONTROL=CONVEX_POLYGON=CORNER=CORNERS=CROSS=CUSTOM=DARKEST=DEGREES=DEG_TO_RAD=DELETE=DIAMETER=DIFFERENCE=DIFFUSE=DILATE=DIRECTIONAL=DISABLED=DODGE=DOWN=DXF=ENTER=EPSILON=ERODE=ESC=EXCLUSION=GIF=GRAY=GREEN_MASK=GROUP=HALF=HALF_PI=HAND=HARD_LIGHT=HINT_COUNT=HSB=IMAGE=INVERT=JAVA2D=JPEG=
   LEFT=LIGHTEST=LINES=LINUX=MACOSX=MAX_FLOAT=MAX_INT=MITER=MODEL=MOVE=MULTIPLY=NORMAL=NORMALIZED=NO_DEPTH_TEST=NTSC=ONE=OPAQUE=OPEN=OPENGL=ORTHOGRAPHIC=OVERLAY=P2D=P3D=PAL=PDF=PERSPECTIVE=PI=PIXEL_CENTER=POINT=POINTS=POSTERIZE=PROBLEM=PROJECT=QUADS=QUAD_STRIP=QUARTER_PI=RADIANS=RADIUS=RAD_TO_DEG=RED_MASK=REPLACE=RETURN=RGB=RIGHT=ROUND=SCREEN=SECAM=SHIFT=SOFT_LIGHT=SPECULAR=SQUARE=SUBTRACT=SVIDEO=TAB=TARGA=TEXT=TFF=THIRD_PI=THRESHOLD=TIFF=TOP=TRIANGLES=TRIANGLE_FAN=TRIANGLE_STRIP=TUNER=TWO=TWO_PI=UP=
   WAIT=WHITESPACE=XML=ArrayList=BufferedReader=Character=HashMap=Integer=PFont=PGraphics=PImage=PShader=PShape=PVector=PrintWriter=StringBuffer=abs=acos=addChild=alpha=ambient=ambientLight=append=applyMatrix=arc=asin=atan=atan2=background=beginCamera=beginContour=beginRaw=beginRecord=beginShape=bezier=bezierDetail=bezierPoint=bezierTangent=bezierVertex=binary=bind=blend=blendColor=blendMode=blue=box=breakShape=brightness=cache=camera=ceil=clip=color=colorMode=concat=constrain=copy=cos=createFont=createGraphics=
@@ -29,49 +29,37 @@ SketchBouncybubbled = (function() {
 
   var Ball;
 
-  SketchBouncybubbled.name = 'SketchBouncybubbled';
+  SketchBouncybubbledbasic.name = 'SketchBouncybubbledbasic';
 
-  function SketchBouncybubbled() {}
+  function SketchBouncybubbledbasic() {}
 
-  SketchBouncybubbled.prototype.setup = function() {
+  SketchBouncybubbledbasic.prototype.setup = function() {
     (function(processing){injectProcessingApi(processing);size=function csModeApiInjectIffy (){processing.size.apply(processing,arguments);injectProcessingApi(processing);}})(this);
 
-    var i, _i, _ref, _results;
+    var arr, i, _i, _len, _results;
     size(600, 600);
     fill(0);
     noStroke();
-    this.ball_num = 12;
-    this.spring = 0.5;
+    arr = [0, 1, 2];
     this.brr = [];
     _results = [];
-    for (i = _i = 0, _ref = this.ball_num; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
-      _results.push(this.brr.push(new Ball(width / 2 - i * 100, (height / 2) + i * 50, i * 2 + 50)));
+    for (_i = 0, _len = arr.length; _i < _len; _i++) {
+      i = arr[_i];
+      _results.push(this.brr.push(new Ball(width / 2, (height / 2) + i * 50, 50 + i * 20)));
     }
     return _results;
   };
 
-  SketchBouncybubbled.prototype.draw = function() {
-    var ball, ith, _i, _j, _ref, _ref1, _ref2, _results;
+  SketchBouncybubbledbasic.prototype.draw = function() {
+    var ball, _i, _len, _ref, _results;
     background(0);
+    _ref = this.brr;
     _results = [];
-    for (ball = _i = 0, _ref = this.ball_num; 0 <= _ref ? _i < _ref : _i > _ref; ball = 0 <= _ref ? ++_i : --_i) {
-      for (ith = _j = _ref1 = ball + 1, _ref2 = this.ball_num; _ref1 <= _ref2 ? _j < _ref2 : _j > _ref2; ith = _ref1 <= _ref2 ? ++_j : --_j) {
-        this.dx = this.brr[ith].xpos - this.brr[ball].xpos;
-        this.dy = this.brr[ith].ypos - this.brr[ball].ypos;
-        this.dist = sqrt(this.dx * this.dx + this.dy * this.dy);
-        this.mind = this.brr[ith].diamter / 2 + this.brr[ball].diamter / 2;
-        if (this.dist < this.mind) {
-          this.angle = atan2(this.dy, this.dx);
-          this.tarX = this.brr[ball].xpos + cos(this.angle) * this.mind;
-          this.tarY = this.brr[ball].ypos + sin(this.angle) * this.mind;
-          this.tax = (this.tarX - this.brr[ith].xpos) * this.spring;
-          this.tay = (this.tarY - this.brr[ith].ypos) * this.spring;
-          this.brr[ith].collide(this.tax, this.tay);
-          this.brr[ball].collide(-this.tax, -this.tay);
-        }
-      }
-      this.brr[ball].move();
-      _results.push(this.brr[ball].display());
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      ball = _ref[_i];
+      ball.collide();
+      ball.move();
+      _results.push(ball.display());
     }
     return _results;
   };
@@ -86,16 +74,13 @@ SketchBouncybubbled = (function() {
       this.diamter = diamter;
       this.fri = -0.5;
       this.fur = 0.9;
-      this.g = 0.2;
-      this.vx = 5;
+      this.g = 0.1;
+      this.vx = 20;
       this.vy = 1;
     }
 
-    Ball.prototype.collide = function(ax, ay) {
-      this.ax = ax;
-      this.ay = ay;
-      this.vx += this.ax;
-      return this.vy += this.ay;
+    Ball.prototype.collide = function() {
+      return console.log('');
     };
 
     Ball.prototype.move = function() {
@@ -133,6 +118,6 @@ SketchBouncybubbled = (function() {
 
   })();
 
-  return SketchBouncybubbled;
+  return SketchBouncybubbledbasic;
 
 })();

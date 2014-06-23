@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 	<head>
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
-		<title>BouncyBubbled : Built with Processing and Processing.js</title>
+		<title>Array_ : Built with Processing and Processing.js</title>
 		<link rel="icon"  type="image/x-icon" href="data:image/x-icon;base64,AAABAAEAEBAQAAEABAAoAQAAFgAAACgAAAAQAAAAIAAAAAEABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADAQAAVzABAEAjBQAaDwYAWjUGAGE6CQBrQQ0ATS8PAFhAJwBUQC8AbFI6AHVXPACBZk4A4NrWAPb19QAAAAAAAMmZmZmZmgAJIwAAAAAAcMIjPjA+PjAKpxIuMDMzMAm0Ii4zMzMACaIiLt3dMAAJtyIuIzPQAAm0Un5yM+IzKLRkfncy4iIotRF+dyLkIiq0QX53F+EiGrQUTkd34iIatEVu7u5iIVrBVVRBRFRVbAtGZGZla2uwAMu7u7u8vADAAwAAgAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIABAADAAwAA" />
 		<meta name="Generator" content="Processing" />
 		<!-- + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + 
@@ -33,7 +33,7 @@
 		canvas { display: block; outline: 0px; margin-bottom: 1.5em; }
 		#content { 
 			margin: 50px auto 0px auto; padding: 25px 25px 15px 25px;
-			width: 600px; min-width: 300px; overflow: auto;
+			width: 640px; min-width: 300px; overflow: auto;
 			border-left: 1px solid #444; border-top: 1px solid #444; 
 			border-right: 1px solid #333; border-bottom: 1px solid #333;
 			background-color: #3d3d3d;
@@ -43,15 +43,15 @@
 			<script type="text/javascript">alert("Your browser does not support the canvas tag.");</script>
 		<![endif]-->
 		<script src="processing.js" type="text/javascript"></script>
-		<script src="BouncyBubbled-compiled.js" type="text/javascript"></script>
-		<script type="text/javascript">function getProcessingSketchID () { return 'BouncyBubbled'; }</script>
+		<script src="Array_-compiled.js" type="text/javascript"></script>
+		<script type="text/javascript">function getProcessingSketchID () { return 'Array'; }</script>
 
 	</head>
 	<body>
 		<div id="content">
 			<div>
-				<canvas id="BouncyBubbled" 
-						width="600" height="600">
+				<canvas id="Array" 
+						width="640" height="360">
 					<p>Your browser does not support the canvas tag.</p>
 					<!-- Note: you can put any alternative content here. -->
 				</canvas>
@@ -59,9 +59,9 @@
 					<p>JavaScript is required to view the contents of this page.</p>
 				</noscript>
 	    	</div>
-			<h1>BouncyBubbled</h1>
+			<h1>Array_</h1>
 	    	<p id="description"></p>
-			<p id="sources">Source code: <a href="BouncyBubbled.pde">BouncyBubbled</a> <a href="Ball.pde">Ball</a> </p>
+			<p id="sources">Source code: <a href="Array_.pde">Array_</a> </p>
 			<p id="">
 			Written in <a href="http://coffeescript.org/" title="CoffeeScript">CoffeeScript</a> 
 			on <a href="http://processing.org" title="Processing">Processing</a>
@@ -69,79 +69,42 @@
 			</p>
 		</div>
 		<script type="text/coffeescript-processing">
-class SketchBouncybubbled
-  #Bouncy Bubbles  
-  #based on code from Keith Peters. 
-  #Multiple-object collision.
-  #coffee script ver0.1
-  #2014.2.24 xuanzhang
-  #with x->friction
-  setup: ->
-    "Processing API injection iffy goes here";
-    size 600, 600
-    fill 0
-    noStroke()
-    @ball_num = 12
-    @spring = 0.5
-    @brr = []
-    for i in [0...@ball_num]
-      @brr.push new Ball(width/2-i*100, (height/2)+i*50, i*2+50)
-  draw: ->
-    background 0
-    for ball in [0...@ball_num]
-      for ith in [ball+1...@ball_num]
-        @dx = @brr[ith].xpos - @brr[ball].xpos
-        @dy = @brr[ith].ypos - @brr[ball].ypos
-        @dist = sqrt(@dx*@dx + @dy*@dy)
-        @mind = @brr[ith].diamter/2 + @brr[ball].diamter/2
-        if @dist < @mind
-          @angle = atan2(@dy, @dx)
-          @tarX = @brr[ball].xpos + cos(@angle) * @mind
-          @tarY = @brr[ball].ypos + sin(@angle) * @mind
-          @tax = (@tarX - @brr[ith].xpos) * @spring
-          @tay = (@tarY - @brr[ith].ypos) * @spring
-          @brr[ith].collide(@tax, @tay)
-          @brr[ball].collide(-@tax, -@tay)
-      @brr[ball].move()
-      @brr[ball].display()
-      
-  class Ball
-      
-      constructor: ( @xpos, @ypos, @diamter ) ->
-          @fri = -0.5
-          @fur = 0.9
-          @g = 0.2
-          @vx = 5
-          @vy = 1
-      collide: (@ax, @ay) ->
-          @vx += @ax
-          @vy += @ay
-      move: ->
-          if @ypos == height - @diamter/2
-              @vx *= @fur
-          if abs(@vx) < 0.001
-              @vx = 0
-          @vy += @g
-          @xpos += @vx
-          @ypos += @vy
-          if (@xpos + @diamter/2) > width
-              @xpos = width - @diamter/2
-              @vx *= @fri
-          else if (@xpos - @diamter/2) < 0
-              @xpos = @diamter/2
-              @vx *= @fri
-          if (@ypos + @diamter/2) > height
-              @ypos = height - @diamter/2
-              @vy *= @fri
-          else if (@ypos - @diamter/2) < 0
-              @ypos = @diamter/2
-              @vy *= @fri                
-          #println @vx
-      display: ->
-          fill 255, 50
-          ellipse(@xpos, @ypos, @diamter, @diamter)
-      
-          
+class SketchArray
+    ###
+    Array.
+    An array is a list of data. Each piece of data in an array 
+    is identified by an index number representing its position in 
+    the array. Arrays are zero based, which means that the first 
+    element in the array is [0], the second element is [1], and so on. 
+    In this example, an array named "coswav" is created and
+    filled with the cosine values. This data is displayed three 
+    separate ways on the screen.
+    ###
+    
+    setup: ->
+        "Processing API injection iffy goes here";
+        size 640, 360
+        @coswave = []
+        for i in [0...width]
+            amount = map i, 0, width, 0, PI
+            println i
+            println amount
+            @coswave.push abs( cos( amount ) )
+        
+        noLoop
+    
+    draw: ->
+        for v, i in @coswave
+            stroke v * 255
+            line i, 0, i, height/3
+        
+        for v, i in @coswave
+            stroke (v * 255) / 4
+            line i, height/3, i, height/3*2
+        
+        for v, i in @coswave
+            stroke 255 - v * 255
+            line i, height/3*2, i, height
 
 </script>
 		
@@ -155,14 +118,14 @@ class SketchBouncybubbled
 		 +
 		 + + + + + + + + + + + + + + + + + + + + + + + + + + */
 		window.onload = function(){
-			if ( ! 'SketchBouncybubbled' in window ) {
-				alert('Something went awfully wrong. Please check file SketchBouncybubbled-compiled.js');
+			if ( ! 'SketchArray' in window ) {
+				alert('Something went awfully wrong. Please check file SketchArray-compiled.js');
 				return;
 			}
 			var p5 = new Processing(
-				document.getElementById("BouncyBubbled"),
+				document.getElementById("Array"),
 				function ( processing ) {
-					var sketchObj = new SketchBouncybubbled();
+					var sketchObj = new SketchArray();
 					for ( var name in sketchObj ) {
 						processing[name] = sketchObj[name];
 					}

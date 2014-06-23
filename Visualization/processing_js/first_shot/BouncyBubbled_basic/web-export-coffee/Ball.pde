@@ -1,14 +1,13 @@
 class Ball
     
-    constructor: ( @xpos, @ypos, @diamter ) ->
+    constructor: ( @xpos, @ypos, @diamter) ->
         @fri = -0.5
         @fur = 0.9
-        @g = 0.2
-        @vx = 5
+        @g = 0.1
+        @vx = 20
         @vy = 1
-    collide: (@ax, @ay) ->
-        @vx += @ax
-        @vy += @ay
+    collide: ->
+        console.log('')
     move: ->
         if @ypos == height - @diamter/2
             @vx *= @fur
