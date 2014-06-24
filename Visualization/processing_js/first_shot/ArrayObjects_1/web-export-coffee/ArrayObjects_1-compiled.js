@@ -1,6 +1,6 @@
-var SketchArray1;
+var SketchArrayobjects1;
 
-SketchArray1 = (function() {
+SketchArrayobjects1 = (function() {
     var ADD=ALIGN_CENTER=ALIGN_LEFT=ALIGN_RIGHT=ALPHA=ALPHA_MASK=ALT=AMBIENT=ARGB=ARROW=BACKSPACE=BASELINE=BEVEL=BLEND=BLUE_MASK=BLUR=BOTTOM=BURN=CENTER=CHATTER=CLOSE=CMYK=CODED=COMPLAINT=COMPONENT=COMPOSITE=CONCAVE_POLYGON=CONTROL=CONVEX_POLYGON=CORNER=CORNERS=CROSS=CUSTOM=DARKEST=DEGREES=DEG_TO_RAD=DELETE=DIAMETER=DIFFERENCE=DIFFUSE=DILATE=DIRECTIONAL=DISABLED=DODGE=DOWN=DXF=ENTER=EPSILON=ERODE=ESC=EXCLUSION=GIF=GRAY=GREEN_MASK=GROUP=HALF=HALF_PI=HAND=HARD_LIGHT=HINT_COUNT=HSB=IMAGE=INVERT=JAVA2D=JPEG=
     LEFT=LIGHTEST=LINES=LINUX=MACOSX=MAX_FLOAT=MAX_INT=MITER=MODEL=MOVE=MULTIPLY=NORMAL=NORMALIZED=NO_DEPTH_TEST=NTSC=ONE=OPAQUE=OPEN=OPENGL=ORTHOGRAPHIC=OVERLAY=P2D=P3D=PAL=PDF=PERSPECTIVE=PI=PIXEL_CENTER=POINT=POINTS=POSTERIZE=PROBLEM=PROJECT=QUADS=QUAD_STRIP=QUARTER_PI=RADIANS=RADIUS=RAD_TO_DEG=RED_MASK=REPLACE=RETURN=RGB=RIGHT=ROUND=SCREEN=SECAM=SHIFT=SOFT_LIGHT=SPECULAR=SQUARE=SUBTRACT=SVIDEO=TAB=TARGA=TEXT=TFF=THIRD_PI=THRESHOLD=TIFF=TOP=TRIANGLES=TRIANGLE_FAN=TRIANGLE_STRIP=TUNER=TWO=TWO_PI=UP=
     WAIT=WHITESPACE=XML=ArrayList=BufferedReader=Character=HashMap=Integer=PFont=PGraphics=PImage=PShader=PShape=PVector=PrintWriter=StringBuffer=abs=acos=addChild=alpha=ambient=ambientLight=append=applyMatrix=arc=asin=atan=atan2=background=beginCamera=beginContour=beginRaw=beginRecord=beginShape=bezier=bezierDetail=bezierPoint=bezierTangent=bezierVertex=binary=bind=blend=blendColor=blendMode=blue=box=breakShape=brightness=cache=camera=ceil=clip=color=colorMode=concat=constrain=copy=cos=createFont=createGraphics=
@@ -27,63 +27,94 @@ SketchArray1 = (function() {
     function(){return a.width})};
 
 
+  var Module;
 
-  SketchArray1.name = 'SketchArray1';
+  SketchArrayobjects1.name = 'SketchArrayobjects1';
 
-  function SketchArray1() {}
+  function SketchArrayobjects1() {}
 
   /*
-      Array.
-      An array is a list of data. Each piece of data in an array 
-      is identified by an index number representing its position in 
-      the array. Arrays are zero based, which means that the first 
-      element in the array is [0], the second element is [1], and so on. 
-      In this example, an array named "coswav" is created and
-      filled with the cosine values. This data is displayed three 
-      separate ways on the screen.
+      Array Objects. 
+      
+      Demonstrates the syntax for creating an array of custom objects.
   */
 
 
-  SketchArray1.prototype.setup = function() {
+  SketchArrayobjects1.prototype.setup = function() {
     (function(processing){injectProcessingApi(processing);size=function csModeApiInjectIffy (){processing.size.apply(processing,arguments);injectProcessingApi(processing);}})(this);
 
-    var amount, i, _i, _results;
+    var highCount, wideCount, x, y, _i, _ref, _results;
     size(640, 360);
-    this.coswave = [];
+    noStroke();
+    this.unit = 40;
+    wideCount = width / this.unit;
+    highCount = height / this.unit;
+    this.count = wideCount * highCount;
+    this.mods = [];
     _results = [];
-    for (i = _i = 0; 0 <= width ? _i < width : _i > width; i = 0 <= width ? ++_i : --_i) {
-      amount = map(i, 0, width, 0, 2 * PI);
-      _results.push(this.coswave.push(abs(cos(amount))));
+    for (y = _i = 0, _ref = highCount - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; y = 0 <= _ref ? ++_i : --_i) {
+      _results.push((function() {
+        var _j, _ref1, _results1;
+        _results1 = [];
+        for (x = _j = 0, _ref1 = wideCount - 1; 0 <= _ref1 ? _j <= _ref1 : _j >= _ref1; x = 0 <= _ref1 ? ++_j : --_j) {
+          _results1.push(this.mods.push(new Module(x * this.unit, y * this.unit, this.unit / 2, this.unit / 2, random(0.05, 0.8), this.unit)));
+        }
+        return _results1;
+      }).call(this));
     }
     return _results;
   };
 
-  SketchArray1.prototype.draw = function() {
-    var i, v, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _results;
-    _ref = this.coswave;
-    for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
-      v = _ref[i];
-      println(v);
-      println(i);
-      stroke(v * 255);
-      line(i, 0, i, height / 3);
-    }
-    _ref1 = this.coswave;
-    for (i = _j = 0, _len1 = _ref1.length; _j < _len1; i = ++_j) {
-      v = _ref1[i];
-      stroke((v * 255) / 4);
-      line(i, height / 3, i, height / 3 * 2);
-    }
-    _ref2 = this.coswave;
+  SketchArrayobjects1.prototype.draw = function() {
+    var m, _i, _len, _ref, _results;
+    background(0);
+    _ref = this.mods;
     _results = [];
-    for (i = _k = 0, _len2 = _ref2.length; _k < _len2; i = ++_k) {
-      v = _ref2[i];
-      stroke(255 - v * 255);
-      _results.push(line(i, height / 3 * 2, i, height));
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      m = _ref[_i];
+      m.update();
+      _results.push(m.draw(this));
     }
     return _results;
   };
 
-  return SketchArray1;
+  Module = (function() {
+
+    Module.name = 'Module';
+
+    function Module(xOffset, yOffset, x, y, speed, unit) {
+      this.xOffset = xOffset;
+      this.yOffset = yOffset;
+      this.x = x;
+      this.y = y;
+      this.speed = speed;
+      this.unit = unit;
+      this.xDirection = 1;
+      this.yDirection = 1;
+    }
+
+    Module.prototype.update = function() {
+      this.x += this.speed + this.xDirection;
+      if (this.x >= this.unit || this.x <= 0) {
+        this.xDirection *= -1;
+        this.x += this.xDirection;
+        this.y += this.yDirection;
+      }
+      if (this.y >= this.unit || this.y <= 0) {
+        this.yDirection *= -1;
+        return this.y += this.yDirection;
+      }
+    };
+
+    Module.prototype.draw = function() {
+      fill(255);
+      return ellipse(this.xOffset + this.x, this.yOffset + this.y, 6, 6);
+    };
+
+    return Module;
+
+  })();
+
+  return SketchArrayobjects1;
 
 })();

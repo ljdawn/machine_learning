@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 	<head>
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
-		<title>Array_1 : Built with Processing and Processing.js</title>
+		<title>Array2D_1 : Built with Processing and Processing.js</title>
 		<link rel="icon"  type="image/x-icon" href="data:image/x-icon;base64,AAABAAEAEBAQAAEABAAoAQAAFgAAACgAAAAQAAAAIAAAAAEABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADAQAAVzABAEAjBQAaDwYAWjUGAGE6CQBrQQ0ATS8PAFhAJwBUQC8AbFI6AHVXPACBZk4A4NrWAPb19QAAAAAAAMmZmZmZmgAJIwAAAAAAcMIjPjA+PjAKpxIuMDMzMAm0Ii4zMzMACaIiLt3dMAAJtyIuIzPQAAm0Un5yM+IzKLRkfncy4iIotRF+dyLkIiq0QX53F+EiGrQUTkd34iIatEVu7u5iIVrBVVRBRFRVbAtGZGZla2uwAMu7u7u8vADAAwAAgAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIABAADAAwAA" />
 		<meta name="Generator" content="Processing" />
 		<!-- + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + 
@@ -43,14 +43,14 @@
 			<script type="text/javascript">alert("Your browser does not support the canvas tag.");</script>
 		<![endif]-->
 		<script src="processing.js" type="text/javascript"></script>
-		<script src="Array_1-compiled.js" type="text/javascript"></script>
-		<script type="text/javascript">function getProcessingSketchID () { return 'Array1'; }</script>
+		<script src="Array2D_1-compiled.js" type="text/javascript"></script>
+		<script type="text/javascript">function getProcessingSketchID () { return 'Array2D1'; }</script>
 
 	</head>
 	<body>
 		<div id="content">
 			<div>
-				<canvas id="Array1" 
+				<canvas id="Array2D1" 
 						width="640" height="360">
 					<p>Your browser does not support the canvas tag.</p>
 					<!-- Note: you can put any alternative content here. -->
@@ -59,9 +59,9 @@
 					<p>JavaScript is required to view the contents of this page.</p>
 				</noscript>
 	    	</div>
-			<h1>Array_1</h1>
+			<h1>Array2D_1</h1>
 	    	<p id="description"></p>
-			<p id="sources">Source code: <a href="Array_1.pde">Array_1</a> </p>
+			<p id="sources">Source code: <a href="Array2D_1.pde">Array2D_1</a> </p>
 			<p id="">
 			Written in <a href="http://coffeescript.org/" title="CoffeeScript">CoffeeScript</a> 
 			on <a href="http://processing.org" title="Processing">Processing</a>
@@ -69,42 +69,39 @@
 			</p>
 		</div>
 		<script type="text/coffeescript-processing">
-class SketchArray1
+class SketchArray2d1
     ###
-    Array.
-    An array is a list of data. Each piece of data in an array 
-    is identified by an index number representing its position in 
-    the array. Arrays are zero based, which means that the first 
-    element in the array is [0], the second element is [1], and so on. 
-    In this example, an array named "coswav" is created and
-    filled with the cosine values. This data is displayed three 
-    separate ways on the screen.
+    Array 2D. 
+    
+    Demonstrates the syntax for creating a two-dimensional (2D) array.
+    Values in a 2D array are accessed through two index values.  
+    2D arrays are useful for storing images. In this example, each dot 
+    is colored in relation to its distance from the center of the image. 
     ###
     
     setup: ->
         "Processing API injection iffy goes here";
         size 640, 360
-        @coswave = []
-        for i in [0...width]
-            amount = map i, 0, width, 0, 2*PI
-            @coswave.push abs( cos( amount ) )
+        @maxDistance = dist width/2, height/2, width, height
+        @distances = []
+        for y in [0...height]
+            @distances.push []
+            i = @distances.length-1
+            for x in [0...width]
+                distance = dist width/2, height/2, x, y
+                @distances[i].push (distance / @maxDistance * 255)
         
-        #noLoop
+        @spacer = 10
+        noLoop()
     
     draw: ->
-        for v, i in @coswave
-            println v
-            println i
-            stroke v * 255
-            line i, 0, i, height/3
+        background 0
+        for y in [0...height] by @spacer
+            for x in [0...width] by @spacer
+                stroke @distances[y][x]
+                point x + @spacer/2, y - @spacer/2
         
-        for v, i in @coswave
-            stroke (v * 255) / 4
-            line i, height/3, i, height/3*2
         
-        for v, i in @coswave
-            stroke 255 - v * 255
-            line i, height/3*2, i, height
 
 </script>
 		
@@ -118,14 +115,14 @@ class SketchArray1
 		 +
 		 + + + + + + + + + + + + + + + + + + + + + + + + + + */
 		window.onload = function(){
-			if ( ! 'SketchArray1' in window ) {
-				alert('Something went awfully wrong. Please check file SketchArray1-compiled.js');
+			if ( ! 'SketchArray2d1' in window ) {
+				alert('Something went awfully wrong. Please check file SketchArray2d1-compiled.js');
 				return;
 			}
 			var p5 = new Processing(
-				document.getElementById("Array1"),
+				document.getElementById("Array2D1"),
 				function ( processing ) {
-					var sketchObj = new SketchArray1();
+					var sketchObj = new SketchArray2d1();
 					for ( var name in sketchObj ) {
 						processing[name] = sketchObj[name];
 					}

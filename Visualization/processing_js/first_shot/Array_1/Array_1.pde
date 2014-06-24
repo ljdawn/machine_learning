@@ -13,13 +13,15 @@ setup: ->
     size 640, 360
     @coswave = []
     for i in [0...width]
-        amount = map i, 0, width, 0, PI
+        amount = map i, 0, width, 0, 2*PI
         @coswave.push abs( cos( amount ) )
     
-    noLoop
+    #noLoop
 
 draw: ->
     for v, i in @coswave
+        println v
+        println i
         stroke v * 255
         line i, 0, i, height/3
     
