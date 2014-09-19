@@ -19,11 +19,27 @@ def insertion_sort(List):
 			List = right_l[:i] + [List[0]] + right_l[i:]
 	return [List[0]] + right_l
 
-def mearge_sort(List):
-	pass
+def quick_sub_sort(array, low, high):
+	key = array[low]
+	while low < high:
+		while low < high and key <= array[high]:
+			high -= 1
+		while low < high and key > array[high]:
+			array[low] = array[high]  
+			low += 1
+			array[high] = array[low]  
+	array[low] = key  
+	return low
+
+def quick_sort(array, low, high):
+	if low < high :  
+		key_index = quick_sub_sort(array,low,high)
+		quick_sort(array, low, key_index)  
+		quick_sort(array, key_index+1, high)
 
 if __name__ == '__main__':
-	test_list = [2,3,51,3,2,5,78,88,34,25,2,1000]
+	test_list = [12,3,51,3,2,5,78,88,34,25,2,1000]
 	print bubble_sort(test_list)
 	print selection_sort(test_list)
 	print insertion_sort(test_list)
+	print quick_sort(test_list, 0, len(test_list)-1)
