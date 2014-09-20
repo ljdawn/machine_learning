@@ -64,6 +64,19 @@ def merge(left, right):
 		res.extend(right[right_index:])
 	return res
 
+def binary_search(l, value):
+	low = 0
+	high = len(l) - 1
+	while low <= high:
+		mid = (low + high) / 2
+		if l[mid] == value:
+			return mid
+		elif l[mid] < value:
+			low = mid + 1
+		else:
+			high = mid - 1
+	return 'not found!'
+
 
 if __name__ == '__main__':
 	test_list = [12,3,51,3,2,5,78,88,34,25,2,1000]
@@ -71,5 +84,7 @@ if __name__ == '__main__':
 	#print selection_sort(test_list)
 	#print quick_sort(test_list)
 	#print merge(test_list[:5], test_list[5:])
-	print merge_sort(test_list)
-
+	#print merge_sort(test_list)
+	sorted_list = merge_sort(test_list)
+	print sorted_list
+	print binary_search(sorted_list, 10)
