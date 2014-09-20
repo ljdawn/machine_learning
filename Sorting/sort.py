@@ -64,6 +64,7 @@ def merge(left, right):
 		res.extend(right[right_index:])
 	return res
 
+#二分查找,输入数组需要排序。
 def binary_search(l, value):
 	low = 0
 	high = len(l) - 1
@@ -85,6 +86,6 @@ if __name__ == '__main__':
 	#print quick_sort(test_list)
 	#print merge(test_list[:5], test_list[5:])
 	#print merge_sort(test_list)
-	sorted_list = merge_sort(test_list)
-	print sorted_list
-	print binary_search(sorted_list, 10)
+	#sorted_list = merge_sort(test_list)
+	#print sorted_list
+	#print binary_search(sorted_list, 10)
