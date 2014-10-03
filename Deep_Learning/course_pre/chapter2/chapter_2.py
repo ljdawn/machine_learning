@@ -13,11 +13,13 @@ def Linear_regression():
 	y_path = 'ex2y.dat'
 	x = read_data(x_path)
 	y = read_data(y_path)
+	print x
 	height = len(x)
 	width = 1
 
 	intercept = np.ones(height)
 	x = np.append(intercept, x).reshape(width + 1, height)
+	print x
 	alpha = 0.07
 
 	#show data
