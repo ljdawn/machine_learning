@@ -26,7 +26,7 @@ def Linear_regression_2():
 
 	alpha = 1
 
-	#iteratons
+	#iteratons GD
 	theta = np.zeros(width + 1)
 
 	for i in xrange(100):
