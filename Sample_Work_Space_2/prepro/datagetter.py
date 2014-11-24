@@ -41,6 +41,7 @@ class Datagetter(object):
 		else:
 			foundtime = '-1'
 		return foundtime
+	
 	@classmethod
 	def fn_domain_type(site_url):
 		domain_1st = re.compile(r'www\.')
