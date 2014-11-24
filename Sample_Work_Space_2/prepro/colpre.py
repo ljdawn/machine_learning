@@ -26,8 +26,11 @@ class Colnoun(object):
 	def one_hot(self):
 		self.data = pd.DataFrame(data = self._one_hot_data(), columns = self._one_hot_labels())
 
-	def look_up(self):
+	def get_data(self):
 		return self.data
+
+	def look_up(self):
+		pass
 
 
 class Colnum(object):
@@ -45,41 +48,18 @@ class Colnum(object):
 		scaler = preprocessing.StandardScaler().fit(self.data.values)
 		self.data = pd.DataFrame(min_max_scaler.fit_transform(scaler.transform(self.data.values)), columns = self.data.columns)
 
-	def look_up(self):
+	def get_data(self):
 		return self.data
 
 class Colcombine(object):
 
-	def __init__(self, noun_block, num_block):
-		self.values = np.hstack((noun_block.values, num_block.values))
-		self.labels = noun_block.columns + num_block.columns
+	def __init__(self, Y, noun_block, num_block):
+		self.values = np.hstack((Y.values, noun_block.values, num_block.values))
+		self.labels = Y.columns + noun_block.columns + num_block.columns
 
-	def look_up(self):
+	def get_data(self):
 		self.data = pd.DataFrame(self.values, columns = self.labels)
-		print self.data
+		return self.data
 
-
-
-a = np.array([[1,2,3,4,66],[2,3,4,5,-1],[3,4,5,100,89]])
-title = ['a', 'b', 'c', 'd', 'e']
-c = pd.DataFrame(a, columns = title)
-print c
-
-noun_list = ['a', 'b', 'c', 'd']
-num_list = ['e']
-
-df_noun = c[noun_list]
-df_num = c[num_list]
-
-dfnoun = Colnoun(df_noun)
-dfnum = Colnum(df_num)
-dfnoun.one_hot()
-b = dfnoun.look_up()
-dfnum.imp()
-dfnum.scale()
-a = dfnum.look_up()
-
-print b, a
-
-d = Colcombine(b, a)
-d.look_up()
+if __name__ == '__main__':
+	pass
