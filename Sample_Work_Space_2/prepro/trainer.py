@@ -35,3 +35,5 @@ class Trainer(object):
 		print '[0]', '|', self._report()[0][0][0], '\t', self._report()[0][0][1], '|'
 		print '[1]', '|', self._report()[0][1][0], '\t', self._report()[0][1][1], '|'
 
+if __name__ == '__main__':
+	pass
