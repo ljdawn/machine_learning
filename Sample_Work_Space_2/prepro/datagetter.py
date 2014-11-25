@@ -15,15 +15,17 @@ class Datagetter(object):
 	"""docstring for Datagetter"""
 	def __init__(self):
 		#self.reqs = str(part_keys).replace("u'","'").replace(", ",",")
-		self.reqs = """['0000220c65057869841567888ce16f46_2013-03-25','0000220c65057869841567888ce16f46_2014-05-29',]"""
+		self.reqs = """['0000220c65057869841567888ce16f46_2013-03-25','0000220c65057869841567888ce16f46_2014-05-29','000035ff8f6b8e99cb1d1edf6178172f_2013-03-12','0000becc4f5b0427d89950f3fdbfaa8a_2014-06-20','0000e26928c40934a41af0e37fb9aa9c_2014-04-02']"""
 		self.request = "http://10.95.28.34:8380/pgData/batchGetPgDetail?req=" + self.reqs
 		self.res = []
 	
-
 	def get_response(self):
 		self.response = urllib2.urlopen(self.request)
 		for ans in self.response:
 			self.res = json.loads(ans)['data']
+
+	def get_value(self, dic, key, def_value = '-1'):
+		return dic[key] if key in dic and dic[key] != '' else def_value
 
 	def get_data(self):
 		return self.res
@@ -71,57 +73,43 @@ class Datagetter(object):
 	def get_detial(self):
 		for rec in self.res:
 			for info in rec['pgInfos']:
-				self.kb_times = 0
+				kb_times = 0
 				self.kb_info = filter(lambda x:x['kb_order_flag'] in ('4','5','6'), info['kb_info'])
-				self.kb_info = info['kb_info']
 				self.s_pg_info = sorted(self.kb_info, key = operator.itemgetter('add_time'))
 				self.sjdt_list = []
 				for i in xrange(len(self.s_pg_info) - 1):
 					self.dt = self.fn_delta_time_2(self.s_pg_info[i]['add_time'][:-2], self.s_pg_info[i+1]['add_time'][:-2]) if self.s_pg_info[i]['add_time'] != '' and self.s_pg_info[i+1]['add_time'] != '' else -1
-					self.sjdt_list.append(dt)
+					self.sjdt_list.append(self.dt)
 				if self.s_pg_info != []:
 					self.ldt = self.fn_delta_time_2(self.s_pg_info[-1]['add_time'][:-2]) if self.s_pg_info[-1]['add_time'] != '' else -1
 					self.sjdt_list.append(self.ldt)
 					self.sjdt_mean = np.mean(map(int ,filter(lambda x:x != '-1', self.sjdt_list)))
 				for sj in self.s_pg_info:
-					self.main_key = rec['key']
-					self.sj_id = sj['id'] if 'id' in sj and sj['id'] != '' else '-1'
-					self.cust_id = sj['cust_id'] if 'cust_id' in sj and sj['cust_id'] != '' else '-1'
-					self.unit_pos_id = sj['unit_pos_id'] if 'unit_pos_id' in sj and sj['unit_pos_id'] != '' else '-1'
-					self.contract_flag = sj['contract_flag'] if 'contract_flag' in sj and sj['contract_flag'] != '' else '-1'
-					self.contract_flag = self.contract_flag if self.kb_times == len(self.s_pg_info)-1 else '0'
-					#print '---',sj['stat']
-					self.Y = 1 if sj['kb_order_flag'] == '4' else 0
-					self.sj_add_time = sj['add_time'] if 'add_time' in sj and sj['add_time'] != '' else '-1'
-					self.sj_end_time = sj['close_time']
-					self.sj_time = self.sjdt_list[self.kb_times -1] if self.sjdt_list != [] else '-1'
-					self.poi_val = poisson.pmf(int(self.sj_time), self.sjdt_mean) if self.sj_time != '-1' and self.sjdt_mean != np.nan else '-1'
-					self.seg_time = self.fn_seg_time(self.sj_add_time) if self.sj_add_time != '-1' else '-1'
-					self.belong_city_id = info['belong_city_id'] if 'belong_city_id' in info and info['belong_city_id'] != '' else '-1'
-					self.trade_1 = info['trade_1'] if 'trade_1' in info and info['trade_1'] != '' else '-1'
-					self.trade_2 = info['trade_2'] if 'trade_2' in info and info['trade_2'] != '' else '-1'
-					self.type = info['type'] if 'type' in info and info['type'] != '' else '-1'
-					self.site_type = info['site_type'] if 'site_type' in info and info['site_type'] != '' else '-1'
-					self.no_site_type = info['no_site_type'] if 'no_site_type' in info and info['no_site_type'] != '' else '-1'
-					self.hint_source_1 = info['hint_source_1'] if 'hint_source_1' in info and info['hint_source_1'] != '' else '-1'
-					self.hint_source_2 = info['hint_source_2'] if 'hint_source_2' in info and info['hint_source_2'] != '' else '-1'
-					self.cust_add_time = info['add_time'] if 'add_time' in info and info['add_time'] != '' else '-1'
-					self.sj_delta_time = self.fn_delta_time(self.cust_add_time[:-2]) if self.cust_add_time != '-1' else '-1'
-					self.registered_fund = info['registered_fund'] if 'registered_fund' in info and info['registered_fund'] != '' else '-1'
-					self.found_time = info['found_time'] if 'found_time' in info and info['found_time'] != '' else '-1'
-					self.delta_found_time = self.fn_delta_fd_time(self.found_time[:-2]) if self.found_time != '-1' else '-1'
-					self.site_url = info['site_url'] if 'site_url' in info and info['site_url'] != [] else '-1'
-					if self.site_url != '-1':site_url = ' '.join(self.site_url)
-					self.domain_type = self.fn_domain_type(site_url) if self.site_url != '-1' else '-1'
-					self.kb_times += 1
-					self.ans = map(str,[self.main_key, self.sj_id, self.cust_id,\
-						self.Y,\
-						self.seg_time, self.belong_city_id, self.trade_1, self.trade_2, self.type,\
-						self.site_type, self.no_site_type, self.hint_source_1, self.hint_source_2,\
-						self.sj_delta_time, self.registered_fund,\
-						self.delta_found_time,\
-						self.domain_type,\
-						self.sjdt_mean, int(self.poi_val*100000), self.kb_times])
+					main_key = rec['key']
+					sj_labels = ('id', 'cust_id', 'unit_pos_id', 'contract_flag','add_time')
+					sj_dict = (sj,)*len(sj_labels)
+					info_labels = ('belong_city_id', 'trade_1', 'trade_2', 'type', 'site_type', 'no_site_type', 'hint_source_1', 'hint_source_2', 'add_time', 'registered_fund', 'found_time')
+					info_dict = (info,)*len(info_labels)
+					(belong_city_id, trade_1, trade_2, info_type, site_type, no_site_type, hint_source_1, hint_source_2, cust_add_time, registered_fund, found_time)=map(self.get_value, info_dict, info_labels)
+					(sj_id, cust_id, unit_pos_id, contract_flag, sj_add_time) = map(self.get_value, sj_dict, sj_labels)
+					Y = 1 if sj['kb_order_flag'] == '4' else 0
+					sj_time = self.sjdt_list[kb_times -1] if self.sjdt_list != [] else '-1'
+					poi_val = poisson.pmf(int(sj_time), self.sjdt_mean) if sj_time != '-1' and self.sjdt_mean != np.nan else '-1'
+					seg_time = self.fn_seg_time(sj_add_time) if sj_add_time != '-1' else '-1'	
+					sj_delta_time = self.fn_delta_time(cust_add_time[:-2]) if cust_add_time != '-1' else '-1'
+					delta_found_time = self.fn_delta_fd_time(found_time[:-2]) if found_time != '-1' else '-1'
+					site_url = info['site_url'] if 'site_url' in info and info['site_url'] != [] else '-1'
+					if site_url != '-1':site_url = ' '.join(site_url)
+					domain_type = self.fn_domain_type(site_url) if site_url != '-1' else '-1'
+					kb_times += 1
+					self.ans = map(str,[main_key, sj_id, cust_id,\
+						Y,\
+						seg_time, belong_city_id, trade_1, trade_2, info_type,\
+						site_type, no_site_type, hint_source_1, hint_source_2,\
+						sj_delta_time, registered_fund,\
+						delta_found_time,\
+						domain_type,\
+						self.sjdt_mean, int(poi_val*100000), kb_times])
 					yield self.ans
 
 
@@ -130,7 +118,6 @@ if __name__ == '__main__':
 	get_d.get_response()
 	for item in get_d.get_detial():
 		print '\t'.join(item)
-
 
 
 
