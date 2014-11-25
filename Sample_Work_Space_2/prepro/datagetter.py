@@ -28,6 +28,12 @@ class Datagetter(object):
 	def get_data(self):
 		return self.res
 
+	def save_data(self, data_path):
+		with open(data_path, 'wb') as pdfile:
+			for rec in self.get_detial():
+				line = ','.join(rec)
+				pdfile.write(line+'\n')
+
 	@classmethod
 	def fn_seg_time(cls, sj_add_time):
 		full_time = sj_add_time.split(' ')[0]

@@ -3,15 +3,23 @@
 import prepro.colpre as preprocessing
 import prepro.datapre as dreader
 import prepro.trainer as trainer
+import prepro.datagetter as datagetter
 import numpy as np
 import pandas as pd
 
 if __name__ == '__main__':
 
 	#setup
-	data_path = 'data/data'
-	columns_path = 'data/header'
+	pre_data_path = 'data/pre_data'
+	data_path = 'data/pre_data'
+	columns_path = 'data/pre_header'
 	sep = ','
+
+	#data
+	data_g = datagetter.Datagetter()
+	data_g.get_response()
+	data_g.save_data(pre_data_path)
+
 
 	#reading
 	mydata = dreader.Mydata(data_path, columns_path, sep)
@@ -20,10 +28,12 @@ if __name__ == '__main__':
 	df_num = data[columns['num']]
 	Y = data[columns['Y']]
 
+
 	#preprocessing
-	dfnoun = preprocessing.Colnoun(df_noun)
+	dfnoun = preprocessing.Colnoun(df_noun + 1)
 	dfnoun.one_hot()
 	noun_part = dfnoun.get_data()
+
 	
 	dfnum = preprocessing.Colnum(df_num)
 	dfnum.imp()
@@ -40,3 +50,7 @@ if __name__ == '__main__':
 	new_model.save_model()
 	new_model.show_res()
 	new_model.show_report()
+
+
+
+

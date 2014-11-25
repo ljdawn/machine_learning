@@ -40,8 +40,8 @@ class Colnum(object):
 
 	def imp(self, missing_values=-1, strategy='mean', axis=0):
 		imp = Imputer(missing_values, strategy, axis)
-		imp.fit(self.data.values)
-		self.data = pd.DataFrame(imp.transform(self.data.values), columns = self.data.columns)
+		imp.fit(self.data.values + 1)
+		self.data = pd.DataFrame(imp.transform(self.data.values + 1), columns = self.data.columns)
 
 	def scale(self):
 		min_max_scaler = preprocessing.MinMaxScaler()
