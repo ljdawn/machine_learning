@@ -103,9 +103,14 @@ class Datagetter(object):
 					delta_found_time = self.fn_delta_fd_time(found_time[:-2]) if found_time != '-1' else '-1'
 					if site_url != '-1':site_url = ' '.join(site_url)
 					domain_type = self.get_fn_value(self.fn_domain_type, site_url)
+					turn_out_count = len(sj['turn_out_infos'])
+					turn_out_time_mean = '-1'
+					if turn_out_count != 0:
+						
 					kb_times += 1
 					self.ans = map(str,[main_key, sj_id, cust_id, Y, seg_time, belong_city_id, trade_1, trade_2, info_type, site_type, \
-						no_site_type, hint_source_1, hint_source_2, sj_delta_time, registered_fund, delta_found_time, domain_type, self.sjdt_mean, int(poi_val*100000), kb_times])
+						no_site_type, hint_source_1, hint_source_2, sj_delta_time, registered_fund, delta_found_time, domain_type, self.sjdt_mean, \
+						int(poi_val*100000), kb_times, turn_out_count])
 					yield self.ans
 
 if __name__ == '__main__':
