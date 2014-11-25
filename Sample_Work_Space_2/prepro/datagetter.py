@@ -25,7 +25,10 @@ class Datagetter(object):
 			self.res = json.loads(ans)['data']
 
 	def get_value(self, dic, key, def_value = '-1'):
-		return dic[key] if key in dic and dic[key] != '' else def_value
+		return dic[key] if key in dic and dic[key] not in ('', [])  else def_value
+
+	def get_fn_value(self, fn, x):
+		return apply(fn, x) if x not in ('-1', []) else '-1'
 
 	def get_data(self):
 		return self.res
@@ -83,14 +86,14 @@ class Datagetter(object):
 				if self.s_pg_info != []:
 					self.ldt = self.fn_delta_time_2(self.s_pg_info[-1]['add_time'][:-2]) if self.s_pg_info[-1]['add_time'] != '' else -1
 					self.sjdt_list.append(self.ldt)
-					self.sjdt_mean = np.mean(map(int ,filter(lambda x:x != '-1', self.sjdt_list)))
+					self.sjdt_mean = np.mean(map(int, filter(lambda x:x != '-1', self.sjdt_list)))
 				for sj in self.s_pg_info:
 					main_key = rec['key']
 					sj_labels = ('id', 'cust_id', 'unit_pos_id', 'contract_flag','add_time')
 					sj_dict = (sj,)*len(sj_labels)
-					info_labels = ('belong_city_id', 'trade_1', 'trade_2', 'type', 'site_type', 'no_site_type', 'hint_source_1', 'hint_source_2', 'add_time', 'registered_fund', 'found_time')
+					info_labels = ('belong_city_id', 'trade_1', 'trade_2', 'type', 'site_type', 'no_site_type', 'hint_source_1', 'hint_source_2', 'add_time', 'registered_fund', 'found_time', 'site_url')
 					info_dict = (info,)*len(info_labels)
-					(belong_city_id, trade_1, trade_2, info_type, site_type, no_site_type, hint_source_1, hint_source_2, cust_add_time, registered_fund, found_time)=map(self.get_value, info_dict, info_labels)
+					(belong_city_id, trade_1, trade_2, info_type, site_type, no_site_type, hint_source_1, hint_source_2, cust_add_time, registered_fund, found_time, site_url)=map(self.get_value, info_dict, info_labels)
 					(sj_id, cust_id, unit_pos_id, contract_flag, sj_add_time) = map(self.get_value, sj_dict, sj_labels)
 					Y = 1 if sj['kb_order_flag'] == '4' else 0
 					sj_time = self.sjdt_list[kb_times -1] if self.sjdt_list != [] else '-1'
@@ -98,20 +101,12 @@ class Datagetter(object):
 					seg_time = self.fn_seg_time(sj_add_time) if sj_add_time != '-1' else '-1'	
 					sj_delta_time = self.fn_delta_time(cust_add_time[:-2]) if cust_add_time != '-1' else '-1'
 					delta_found_time = self.fn_delta_fd_time(found_time[:-2]) if found_time != '-1' else '-1'
-					site_url = info['site_url'] if 'site_url' in info and info['site_url'] != [] else '-1'
 					if site_url != '-1':site_url = ' '.join(site_url)
-					domain_type = self.fn_domain_type(site_url) if site_url != '-1' else '-1'
+					domain_type = self.get_fn_value(self.fn_domain_type, site_url)
 					kb_times += 1
-					self.ans = map(str,[main_key, sj_id, cust_id,\
-						Y,\
-						seg_time, belong_city_id, trade_1, trade_2, info_type,\
-						site_type, no_site_type, hint_source_1, hint_source_2,\
-						sj_delta_time, registered_fund,\
-						delta_found_time,\
-						domain_type,\
-						self.sjdt_mean, int(poi_val*100000), kb_times])
+					self.ans = map(str,[main_key, sj_id, cust_id, Y, seg_time, belong_city_id, trade_1, trade_2, info_type, site_type, \
+						no_site_type, hint_source_1, hint_source_2, sj_delta_time, registered_fund, delta_found_time, domain_type, self.sjdt_mean, int(poi_val*100000), kb_times])
 					yield self.ans
-
 
 if __name__ == '__main__':
 	get_d = Datagetter()
