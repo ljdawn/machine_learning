@@ -39,6 +39,16 @@ class Datagetter(object):
 				line = ','.join(rec)
 				pdfile.write(line+'\n')
 
+
+	def extend_dic(fn):
+		def json_invert(self, dic, key):
+			return ((rec, dic) for rec in dic[key])
+		return json_invert
+
+	@extend_dic
+	def print_(self, items):
+		print item
+
 	@classmethod
 	def fn_seg_time(cls, sj_add_time):
 		full_time = sj_add_time.split(' ')[0]
@@ -105,7 +115,7 @@ class Datagetter(object):
 					domain_type = self.get_fn_value(self.fn_domain_type, site_url)
 					turn_out_count = len(sj['turn_out_infos'])
 					turn_out_time_mean = '-1'
-					if turn_out_count != 0:
+					#if turn_out_count != 0:
 						
 					kb_times += 1
 					self.ans = map(str,[main_key, sj_id, cust_id, Y, seg_time, belong_city_id, trade_1, trade_2, info_type, site_type, \
@@ -116,8 +126,11 @@ class Datagetter(object):
 if __name__ == '__main__':
 	get_d = Datagetter()
 	get_d.get_response()
-	for item in get_d.get_detial():
-		print '\t'.join(item)
+	#for item in get_d.get_detial():
+	#	print '\t'.join(item)
+	for dic in get_d.get_data()[:1]:
+		for item in get_d.print_(dic, 'pgInfos'):
+			print item
 
 
 
