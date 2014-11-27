@@ -16,7 +16,8 @@ class Datagetter(object):
 	def __init__(self):
 		#self.reqs = str(part_keys).replace("u'","'").replace(", ",",")
 		self.reqs = """['0000220c65057869841567888ce16f46_2013-03-25','0000220c65057869841567888ce16f46_2014-05-29','000035ff8f6b8e99cb1d1edf6178172f_2013-03-12','0000becc4f5b0427d89950f3fdbfaa8a_2014-06-20','0000e26928c40934a41af0e37fb9aa9c_2014-04-02']"""
-		self.request = "http://10.95.28.34:8380/pgData/batchGetPgDetail?req=" + self.reqs
+		self.request = "http://10.95.28.34:8480/pgData/batchGetPgDetail?version=2&req=" + self.reqs
+		#print self.request
 		self.res = []
 	
 	def get_response(self):
@@ -42,12 +43,16 @@ class Datagetter(object):
 
 	def extend_dic(fn):
 		def json_invert(self, dic, key):
-			return ((rec, dic) for rec in dic[key])
+			key_keeper = filter(lambda x:x != key, dic.keys())
+			print key_keeper
+			for rec in dic[key]:
+				record = rec
+			return fn(self, (rec, [(i, dic[i]) for i in key_keeper]))
 		return json_invert
 
 	@extend_dic
 	def print_(self, items):
-		print item
+		yield items
 
 	@classmethod
 	def fn_seg_time(cls, sj_add_time):
@@ -128,11 +133,9 @@ if __name__ == '__main__':
 	get_d.get_response()
 	#for item in get_d.get_detial():
 	#	print '\t'.join(item)
-	for dic in get_d.get_data()[:1]:
+	for dic in get_d.get_data()[4:5]:
 		for item in get_d.print_(dic, 'pgInfos'):
 			print item
-
-
 
 
 
